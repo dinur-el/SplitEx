@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { getDatabase, ref, onValue, set } from 'firebase/database';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { initializeApp } from "firebase/app";
 
 
@@ -15,26 +17,31 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const Stack = createNativeStackNavigator();
+
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <Button title="testDB" onPress={storeHighScore}/>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-function storeHighScore() {
-  const db = getDatabase();
-  const reference = ref(db, 'users/' + "Dumidu");
-  set(reference, {
-    highscore: 45,
-  });
 
-  console.log(db)
-}
+// test function
+// function storeHighScore() {
+//   const db = getDatabase();
+//   const reference = ref(db, 'users/' + "Dumidu");
+//   set(reference, {
+//     highscore: 45,
+//   });
+
+//   console.log(db)
+// }
+
 
 const styles = StyleSheet.create({
   container: {
