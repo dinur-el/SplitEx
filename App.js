@@ -2,7 +2,6 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { getDatabase, ref, onValue, set } from 'firebase/database';
 import { initializeApp } from "firebase/app";
-//import { firebaseConfig } from './firebase/firebaseConfig'
 
 
 const firebaseConfig = {
