@@ -7,13 +7,13 @@ import { useNavigation } from '@react-navigation/core'
 import { styles } from './styles/styles';
 
 
-const HomeScreen = () => {
+const HomeScreen = (props) => {
 
   const navigation = useNavigation()
 
   const handleSignOut = () => {
     signOut(auth).then(() => {
-      navigation.replace("Login")
+      props.navigation.navigate('Login')
     })
   }
 

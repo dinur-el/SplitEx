@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/core'
 import { styles } from './styles/styles';
 
 
-const LoginScreen = () => {
+const LoginScreen = (props) => {
 
   const navigation = useNavigation()
   const [email, setEmail] = useState('')
@@ -22,15 +22,16 @@ const LoginScreen = () => {
   }
 
   useEffect(() => {
+    console.log("inside use Effect")
     const unsubscribe = onAuthStateChanged(auth, user => {
       if(user){
         console.log("inside if")
-        navigation.replace("Home")
+        props.navigation.navigate('Home')
       }
-      else{
-        console.log("inside else")
-        navigation.replace("Login")
-      }
+    //   else{
+    //     console.log("inside else")
+    //     // props.navigation.navigate('Login')
+    //   }
     })
 
     return unsubscribe
@@ -66,7 +67,7 @@ const LoginScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity 
             style={[ styles.button, styles.buttonOutline ]}
-            onPress={navigation.replace("Signup")}
+            onPress={props.navigation.replace('Signup')}
         >
             <Text style={ styles.buttonTextOutline }>Sign Up</Text>
         </TouchableOpacity>

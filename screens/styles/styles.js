@@ -14,17 +14,17 @@ export const styles = StyleSheet.create({
 
     input: {
         backgroundColor: 'white',
-        paddingHorizontal: '20',
-        paddingVertical: '10',
-        borderRadius: '10',
-        marginTop: '5'
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 10,
+        marginTop: 5
     },
 
     buttonContainer: {
         width: '60%',
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: '40'
+        marginTop: 40
     },
 
     button: {
@@ -32,7 +32,8 @@ export const styles = StyleSheet.create({
         width: '100%',
         padding: 15,
         borderRadius: 10,
-        alignItems: 'center'
+        alignItems: 'center',
+        marginTop: 40
     },
 
     buttonOutline: {
