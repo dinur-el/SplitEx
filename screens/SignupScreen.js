@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
-import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { KeyboardAvoidingView, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { styles } from './styles/styles';
+import { auth } from '../firebaseConfig'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 
 const SignupScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSignUp = () => {
-        auth
-            .createUserWithEmailAndPassword(email, password)
+
+        createUserWithEmailAndPassword(auth, email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
                 console.log(user.email);
@@ -17,30 +20,30 @@ const SignupScreen = () => {
 
     return (
         <KeyboardAvoidingView
-            // style={}
+            style={styles.container}
             behavior='padding'
         >
-            <View>
+            <View style={styles.inputContainer}>
                 <TextInput
                     placeholder="Email"
                     value={email}
-                    onChangeText={text =>setEmail(text)}
-                    // styles={}
+                    onChangeText={text => setEmail(text)}
+                    style={styles.input}
                 />
                 <TextInput
                     placeholder="Password"
                     value={password}
                     onChangeText={text => setPassword(text)}
-                    // styles={}
+                    style={styles.input}
                     secureTextEntry
                 />
             </View>
-            <View>
+            <View style={styles.buttonContainer}>
                 <TouchableOpacity
                     onPress={handleSignUp}
-                    // styles={}
+                    style={styles.button}
                 >
-                    <Text>Sign Up</Text>
+                    <Text style={styles.buttonTextOutline}>Sign Up</Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
@@ -48,5 +51,3 @@ const SignupScreen = () => {
 }
 
 export default SignupScreen
-
-const styles = StyleSheet.create({})
