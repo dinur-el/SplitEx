@@ -30,6 +30,7 @@ const HomeScreen = (props) => {
 
   // select users from data
   // to be done
+  // commit
   const selectSignedInUsers= () => {
     db.transaction(
       tx => {
