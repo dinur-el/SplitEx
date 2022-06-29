@@ -4,14 +4,14 @@ import React from 'react'
 import { useState } from 'react'
 import { auth } from '../firebaseConfig'
 import { signOut } from 'firebase/auth'
-import { useNavigation } from '@react-navigation/core'
+//import { useNavigation } from '@react-navigation/core'
 import { styles } from './styles/styles';
 import * as SQLite from 'expo-sqlite';
 
 
 const HomeScreen = (props) => {
 
-  const navigation = useNavigation()
+  //const navigation = useNavigation()
 
   // create db 'splitExDB'
   const db = SQLite.openDatabase(
@@ -26,6 +26,10 @@ const HomeScreen = (props) => {
 
   const addUserHandler = (email, id) => {
       setUsers( userList => [...userList, { useremail:email, key:id }] )
+  }
+
+  const handleContactList = () => {
+    props.navigation.navigate('ContactList')
   }
 
   // select users from data
@@ -68,6 +72,12 @@ const HomeScreen = (props) => {
           data={users}
           renderItem={({ item }) => (<Text>{item.useremail}</Text>)}
         /> */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleContactList}
+        >
+          <Text style={styles.buttonText}>Add contacts</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.button}
@@ -75,7 +85,7 @@ const HomeScreen = (props) => {
         >
           <Text style={styles.buttonText}>Sign out</Text>
         </TouchableOpacity>
-
+        
         <TouchableOpacity
           style={styles.button}
           onPress={selectSignedInUsers}

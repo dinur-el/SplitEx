@@ -28,7 +28,8 @@ export const styles = StyleSheet.create({
     },
 
     button: {
-        //backgroundColor: '#782F9',
+        color: 'white',
+        backgroundColor: 'black',
         width: '100%',
         padding: 15,
         borderRadius: 10,
@@ -50,7 +51,7 @@ export const styles = StyleSheet.create({
     },
 
     buttonTextOutline: {
-        color: '#782F9',
+        color: 'black',
         fontWeight: '700',
         fontSize: 16
     }
