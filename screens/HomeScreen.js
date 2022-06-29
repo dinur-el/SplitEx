@@ -68,15 +68,17 @@ const HomeScreen = (props) => {
           data={users}
           renderItem={({ item }) => (<Text>{item.useremail}</Text>)}
         /> */}
+
         <TouchableOpacity
-        style={styles.button}
-        onPress={handleSignOut}
+          style={styles.button}
+          onPress={handleSignOut}
         >
           <Text style={styles.buttonText}>Sign out</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
-        style={styles.button}
-        onPress={selectSignedInUsers}
+          style={styles.button}
+          onPress={selectSignedInUsers}
         >
           <Text style={styles.buttonText}>Check user list</Text>
         </TouchableOpacity>

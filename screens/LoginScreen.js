@@ -22,16 +22,15 @@ const LoginScreen = (props) => {
   }
 
   useEffect(() => {
-    console.log("inside use Effect")
     const unsubscribe = onAuthStateChanged(auth, user => {
       if(user){
         console.log("inside if")
         props.navigation.navigate('Home')
       }
-    //   else{
-    //     console.log("inside else")
-    //     // props.navigation.navigate('Login')
-    //   }
+      else{
+        console.log("inside else")
+        props.navigation.navigate('Login')
+      }
     })
 
     return unsubscribe
@@ -62,12 +61,12 @@ const LoginScreen = (props) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
           onPress={handleLogin}
-          style={styles.button}>
-            <Text style={styles.buttonText}>Login</Text>
+          style={[styles.button, styles.buttonOutline]}>
+            <Text>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity 
             style={[ styles.button, styles.buttonOutline ]}
-            onPress={props.navigation.replace('Signup')}
+            onPress={() => props.navigation.replace('Signup')}
         >
             <Text style={ styles.buttonTextOutline }>Sign Up</Text>
         </TouchableOpacity>
