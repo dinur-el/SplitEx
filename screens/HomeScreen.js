@@ -22,6 +22,10 @@ const HomeScreen = (props) => {
       setExpenseList(expenseList => [...expenseList, { key: Math.random().toString(), value: { description: description, amount: amount } }]);
   }
 
+  const handleContactList = () => {
+    props.navigation.navigate('ContactList')
+  }
+
   const handleSignOut = () => {
     signOut(auth).then(() => {
       props.navigation.navigate('Login')
@@ -30,6 +34,12 @@ const HomeScreen = (props) => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+          style={styles.button}
+          onPress={handleContactList}
+        >
+          <Text style={styles.buttonText}>Add contacts</Text>
+        </TouchableOpacity>
       <TouchableOpacity
         style={[styles.button, styles.buttonOutline]}
         onPress={handleSignOut}
