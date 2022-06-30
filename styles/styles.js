@@ -53,5 +53,11 @@ export const styles = StyleSheet.create({
         color: '#782F9',
         fontWeight: '700',
         fontSize: 16
-    }
+    },
+
+    floatingButtonStyle: {
+        resizeMode: 'contain',
+        width: 50,
+        height: 50,
+    },
 });

@@ -4,12 +4,10 @@ import { useState, useEffect } from 'react'
 import { auth } from '../firebaseConfig'
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { useNavigation } from '@react-navigation/core'
-import { styles } from './styles/styles';
+import { styles } from '../styles/styles';
 
 
 const LoginScreen = (props) => {
-
-  const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -24,11 +22,9 @@ const LoginScreen = (props) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       if(user){
-        console.log("inside if")
         props.navigation.navigate('Home')
       }
       else{
-        console.log("inside else")
         props.navigation.navigate('Login')
       }
     })

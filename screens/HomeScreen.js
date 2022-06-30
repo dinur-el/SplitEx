@@ -1,60 +1,26 @@
 
-import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native'
+import { Image, Text, View, TouchableOpacity, FlatList } from 'react-native'
 import React from 'react'
 import { useState } from 'react'
 import { auth } from '../firebaseConfig'
 import { signOut } from 'firebase/auth'
-import { useNavigation } from '@react-navigation/core'
-import { styles } from './styles/styles';
-import * as SQLite from 'expo-sqlite';
+import { styles } from '../styles/styles';
+import ExpenseListItem from '../components/ExpenseListItem';
 
 
 const HomeScreen = (props) => {
+  const [expenseList, setExpenseList] = useState([]);
 
-  const navigation = useNavigation()
-
-  // create db 'splitExDB'
-  const db = SQLite.openDatabase(
-    {
-        name: 'splitExDB',
-        location: 'default'
-    }, () => { }, 
-        error => {console.log(error)}
-    );
-
-  const [users, setUsers] = useState([])
-
-  const addUserHandler = (email, id) => {
-      setUsers( userList => [...userList, { useremail:email, key:id }] )
+  const updateExpenseHandler = (expenseId, description, amount) => {
+      let index = expenseList.findIndex((key) => key !== expenseId);
+      expenseList[index].value.description = description;
+      expenseList[index].value.amount = amount;
+      setExpenseList(expenseList => [...expenseList]);
   }
 
-  // select users from data
-  // to be done
-  // commit
-  const selectSignedInUsers= () => {
-    db.transaction(
-      tx => {
-        tx.executeSql("SELECT * FROM usersTable", 
-          [], 
-          (_, { rows }) => {     
-            console.log("ROWS RETRIEVED!");
-  
-            let entries = rows._array;
-
-            entries.forEach((entry) => {
-                console.log('entries')
-                console.log(entry)
-                addUserHandler(entry.user_email, entry.id)
-            });
-          },
-          (_, result) => {
-            console.log('SELECT failed!');
-            console.log(result);
-          }
-        )
-      }
-    );
-  }  
+  const saveExpenseHandler = (description, amount) => {
+      setExpenseList(expenseList => [...expenseList, { key: Math.random().toString(), value: { description: description, amount: amount } }]);
+  }
 
   const handleSignOut = () => {
     signOut(auth).then(() => {
@@ -63,26 +29,48 @@ const HomeScreen = (props) => {
   }
 
   return (
-      <View style={styles.container}>
-        {/* <FlatList 
-          data={users}
-          renderItem={({ item }) => (<Text>{item.useremail}</Text>)}
-        /> */}
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={handleSignOut}
-        >
-          <Text style={styles.buttonText}>Sign out</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={selectSignedInUsers}
-        >
-          <Text style={styles.buttonText}>Check user list</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={[styles.button, styles.buttonOutline]}
+        onPress={handleSignOut}
+      >
+        <Text style={styles.buttonTextOutline}>Sign out</Text>
+      </TouchableOpacity>
+      <FlatList
+        data={expenseList}
+        renderItem={
+          (itemData) => (
+            <ExpenseListItem
+              id={itemData.item.key}
+              onSelect={() => props.navigation.navigate('CreateExpense',
+                {
+                  onSaveItem: saveExpenseHandler,
+                  onUpdateItem: updateExpenseHandler,
+                  buttonText: "UPDATE",
+                  item: itemData.item
+                })}
+              item={itemData.item.value}
+            />
+          )
+        }
+      />
+      <TouchableOpacity
+        activeOpacity={0.7}
+        style={styles.addButton}
+        onPress={() => props.navigation.navigate(
+          'CreateExpense',
+          {
+            onSaveItem: saveExpenseHandler,
+            onUpdateItem: updateExpenseHandler,
+            buttonText: "SAVE"
+          })}
+      >
+        <Image
+          source={require('../assets/plus-button-icon-27.jpg')}
+          style={styles.floatingButtonStyle}
+        />
+      </TouchableOpacity>
+    </View>
   )
 }
 
