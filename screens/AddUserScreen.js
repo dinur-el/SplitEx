@@ -13,6 +13,7 @@ const AddUserScreen = (props) => {
       name: user?.name,
       phone: user?.phoneNumbers[0]?.number
     });
+    props.navigation.navigate('Home')
   }
 
   console.log(user)

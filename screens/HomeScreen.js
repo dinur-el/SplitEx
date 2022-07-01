@@ -15,25 +15,6 @@ const HomeScreen = (props) => {
   const [loading, setLoading] = useState(true); // Set loading to true on component mount
 
   useEffect(() => {
-    // (async () => {
-    //   // const subscriber = db.collection("users").get().then((querySnapshot) => {
-    //   const expenses = [];
-    //   const querySnapshot = await getDocs(collection(db, "Expenses"));
-
-    //   querySnapshot.forEach(documentSnapshot => {
-    //     expenses.push({
-    //       ...documentSnapshot.data(),
-    //       key: documentSnapshot.id,
-    //     });
-    //   });
-
-    //   setExpenseList(expenses);
-    //   setLoading(false);
-    //   // });
-
-    //   // Unsubscribe from events when no longer in use
-    //   // return () => subscriber();
-    // })();
     let unsubscribed = false;
 
     getDocs(collection(db, "Expenses"))
@@ -70,9 +51,15 @@ const HomeScreen = (props) => {
     setExpenseList(expenseList => [...expenseList]);
   }
 
-  const saveExpenseHandler = (description, amount) => {
-    setExpenseList(expenseList => [...expenseList, { key: Math.random().toString(), value: { description: description, amount: amount } }]);
+  const saveExpenseHandler = (key, description, amount) => {
+    setExpenseList(expenseList => [...expenseList, { key: key, value: { description: description, amount: amount } }]);
   }
+
+  const deleteExpenseHandler = (expenseId) => {
+    let index = expenseList.findIndex((key) => key !== expenseId);
+    expenseList.splice(index, 1);
+    setExpenseList(expenseList => [...expenseList]);
+}
 
   const handleContactList = () => {
     props.navigation.navigate('ContactList')
@@ -107,6 +94,7 @@ const HomeScreen = (props) => {
             {
               onSaveItem: saveExpenseHandler,
               onUpdateItem: updateExpenseHandler,
+              onDeleteItem: deleteExpenseHandler,
               buttonText: "S A V E"
             })}
 
@@ -126,6 +114,7 @@ const HomeScreen = (props) => {
                 {
                   onSaveItem: saveExpenseHandler,
                   onUpdateItem: updateExpenseHandler,
+                  onDeleteItem: deleteExpenseHandler,
                   buttonText: "U P D A T E",
                   item: itemData.item
                 })}

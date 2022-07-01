@@ -70,14 +70,14 @@ const SignupScreen = (props) => {
                 />
             </View>
             <View style={styles.buttonContainer}>
-            <TouchableOpacity
+                <TouchableOpacity
                     onPress={handleSignUp}
                     style={styles.button}
                 >
                     <Text style={styles.buttonText}>S I G N  U P</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
- //                   onPress={handleSignUp}
+                    onPress={() => { props.navigation.navigate('Login') }}
                     style={styles.button}
                 >
                     <Text style={styles.buttonText}>B A C K</Text>

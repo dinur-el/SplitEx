@@ -24,7 +24,7 @@ export default function App() {
             title: 'Create Expense',
           }}
         >
-          {(props) => <CreateExpenseScreen {...props} onSaveItem={props.route.params.onSaveItem} onUpdateItem={props.route.params.onUpdateItem} />}
+          {(props) => <CreateExpenseScreen {...props} onSaveItem={props.route.params.onSaveItem} onUpdateItem={props.route.params.onUpdateItem} onDeleteItem={props.route.params.onDeleteItem} />}
         </Stack.Screen>
         <Stack.Screen name="ContactList" component={ContactListScreen} />
         <Stack.Screen name="AddUser" component={AddUserScreen} />
