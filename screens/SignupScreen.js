@@ -3,18 +3,31 @@ import { KeyboardAvoidingView, Text, View, TextInput, TouchableOpacity } from 'r
 import { styles } from '../styles/styles';
 import { auth } from '../firebaseConfig'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
-import * as SQLite from 'expo-sqlite';
+import { db } from '../firebaseConfig';
+import { collection, addDoc } from "firebase/firestore"; 
 
 const SignupScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [phone, setPhone] = useState('');
+    const [name, setName] = useState('');
+
 
     const handleSignUp = () => {
 
         createUserWithEmailAndPassword(auth, email, password)
-            .then(userCredentials => {
+            .then(async (userCredentials) => {
                 const user = userCredentials.user;
                 console.log(user.email);
+                
+                const docRef = await addDoc(collection(db, "Users"), {
+                    name: name,
+                    email: email,
+                    phone: phone
+                  });
+                  console.log("Document written with ID: ", docRef.id);
+
+                  props.navigation.navigate('Login')
             })
             .catch(error => alert(error.message))
     }
@@ -26,15 +39,27 @@ const SignupScreen = () => {
         >
             <View style={styles.inputContainer}>
                 <TextInput
+                    placeholder="Fullname"
+                    value={name}
+                    onChangeText={(value) => setName(value)}
+                    style={styles.input}
+                />
+                <TextInput
+                    placeholder="Phone"
+                    value={phone}
+                    onChangeText={(value) => setPhone(value)}
+                    style={styles.input}
+                />
+                <TextInput
                     placeholder="Email"
                     value={email}
-                    onChangeText={text => setEmail(text)}
+                    onChangeText={(value) => setEmail(value)}
                     style={styles.input}
                 />
                 <TextInput
                     placeholder="Password"
                     value={password}
-                    onChangeText={text => setPassword(text)}
+                    onChangeText={(value) => setPassword(value)}
                     style={styles.input}
                     secureTextEntry
                 />
