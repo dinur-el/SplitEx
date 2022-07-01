@@ -86,18 +86,21 @@ const HomeScreen = (props) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.buttonContainer}>
       <TouchableOpacity
-        style={styles.button}
-        onPress={handleContactList}
-      >
-        <Text style={styles.buttonText}>Add contacts</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
+          style={styles.button}
+          onPress={handleContactList}
+        >
+          <Text style={styles.buttonText}>Add contacts</Text>
+        </TouchableOpacity>
+      {/* <TouchableOpacity
         style={[styles.button, styles.buttonOutline]}
         onPress={handleSignOut}
       >
-        <Text style={styles.buttonTextOutline}>Sign out</Text>
-      </TouchableOpacity>
+        <Text style={styles.buttonText}>Sign out</Text>
+      </TouchableOpacity> */}
+      </View>
+
       <FlatList
         data={expenseList}
         renderItem={
