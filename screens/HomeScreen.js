@@ -36,27 +36,27 @@ const HomeScreen = (props) => {
     // })();
     let unsubscribed = false;
 
-  getDocs(collection(db, "Expenses"))
-    .then((querySnapshot) => {
-      if (unsubscribed) return; // unsubscribed? do nothing.
-      
-      const expenses = querySnapshot.docs
-        .map((doc) => ({ 
-          value:{...doc.data()},
-          key: doc.id, 
-        }));
+    getDocs(collection(db, "Expenses"))
+      .then((querySnapshot) => {
+        if (unsubscribed) return; // unsubscribed? do nothing.
+
+        const expenses = querySnapshot.docs
+          .map((doc) => ({
+            value: { ...doc.data() },
+            key: doc.id,
+          }));
 
         setExpenseList(expenses);
         setLoading(false);
-    })
-    .catch((err) => {
-      if (unsubscribed) return; // unsubscribed? do nothing.
+      })
+      .catch((err) => {
+        if (unsubscribed) return; // unsubscribed? do nothing.
 
-      // TODO: Handle errors
-      console.error("Failed to retrieve data", err);
-    });
+        // TODO: Handle errors
+        console.error("Failed to retrieve data", err);
+      });
 
-  return () => unsubscribed  = true;
+    return () => unsubscribed = true;
   }, []);
 
   if (loading) {
@@ -85,15 +85,35 @@ const HomeScreen = (props) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={styles.homeContainer}>
+       <View style={styles.addContactsBtn}> 
+          <TouchableOpacity
+        activeOpacity={0.7}
+        style={styles.addButton}
+        onPress={handleContactList}
+      >
+        <Image
+          source={require('../assets/add-contact.jpeg')}
+          style={styles.floatingButtonStyle}
+        />
+      </TouchableOpacity>
+      </View> 
+      
       <View style={styles.buttonContainer}>
-      <TouchableOpacity
+        <TouchableOpacity
           style={styles.button}
-          onPress={handleContactList}
+          onPress={() => props.navigation.navigate(
+            'CreateExpense',
+            {
+              onSaveItem: saveExpenseHandler,
+              onUpdateItem: updateExpenseHandler,
+              buttonText: "S A V E"
+            })}
+
         >
-          <Text style={styles.buttonText}>Add contacts</Text>
+          <Text style={styles.buttonText}>CREATE EXPENSE</Text>
         </TouchableOpacity>
-      {/* <TouchableOpacity
+        {/* <TouchableOpacity
         style={[styles.button, styles.buttonOutline]}
         onPress={handleSignOut}
       >
@@ -101,6 +121,7 @@ const HomeScreen = (props) => {
       </TouchableOpacity> */}
       </View>
 
+      {/* <View style={styles.expInputContainer}> */}
       <FlatList
         data={expenseList}
         renderItem={
@@ -111,7 +132,7 @@ const HomeScreen = (props) => {
                 {
                   onSaveItem: saveExpenseHandler,
                   onUpdateItem: updateExpenseHandler,
-                  buttonText: "UPDATE",
+                  buttonText: "U P D A T E",
                   item: itemData.item
                 })}
               item={itemData.item.value}
@@ -119,7 +140,8 @@ const HomeScreen = (props) => {
           )
         }
       />
-      <TouchableOpacity
+      {/* </View> */}
+      {/* <TouchableOpacity
         activeOpacity={0.7}
         style={styles.addButton}
         onPress={() => props.navigation.navigate(
@@ -127,14 +149,14 @@ const HomeScreen = (props) => {
           {
             onSaveItem: saveExpenseHandler,
             onUpdateItem: updateExpenseHandler,
-            buttonText: "SAVE"
+            buttonText: "S A V E"
           })}
       >
         <Image
-          source={require('../assets/plus-button-icon-27.jpg')}
+          source={require('../assets/add-expense.png')}
           style={styles.floatingButtonStyle}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   )
 }

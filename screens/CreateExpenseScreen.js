@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, Alert } from 'react-native';
+import { View, TextInput, Button, Text, Alert, TouchableOpacity, DropDownPicker } from 'react-native';
 import { db } from '../firebaseConfig';
 import { collection, addDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { styles } from '../styles/styles';
@@ -77,21 +77,36 @@ const NoteInput = props => {
     }
 
     return (
-        <View style={styles.noteInputcontainer}>
+        <View style={styles.expInputContainer}>
             <View style={styles.inputContainer}>
                 <Text style={styles.label}>Description</Text>
                 <TextInput
                     style={styles.input}
                     onChangeText={(value) => setDescription(value)}
                     value={enteredDescription} />
-                <Text style={styles.label}>Amount</Text>
+                <Text style={styles.label}>Amount ($)</Text>
                 <TextInput
                     style={styles.input}
                     onChangeText={(value) => setAmount(value)}
                     value={enteredAmount} />
+                {/* <DropDownPicker
+                    open={open}
+                    value={value}
+                    items={items}
+                    setOpen={setOpen}
+                    setValue={setValue}
+                    setItems={setItems}
+                    placeholder="Participants"
+                /> */}
             </View>
             <View style={styles.buttonContainer} >
-                <View style={styles.button} ><Button title={buttonTextValue} onPress={saveItemHandler} color='black' /></View>
+
+                <TouchableOpacity
+                    onPress={saveItemHandler}
+                    style={[styles.button,]}>
+                    <Text style={styles.buttonText}>{buttonTextValue}</Text>
+                </TouchableOpacity>
+
             </View>
         </View>
     )

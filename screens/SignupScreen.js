@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { KeyboardAvoidingView, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { KeyboardAvoidingView, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { styles } from '../styles/styles';
 import { auth } from '../firebaseConfig'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { db } from '../firebaseConfig';
-import { collection, addDoc } from "firebase/firestore"; 
+import { collection, addDoc } from "firebase/firestore";
 
 const SignupScreen = () => {
     const [email, setEmail] = useState('');
@@ -19,15 +19,15 @@ const SignupScreen = () => {
             .then(async (userCredentials) => {
                 const user = userCredentials.user;
                 console.log(user.email);
-                
+
                 const docRef = await addDoc(collection(db, "Users"), {
                     name: name,
                     email: email,
                     phone: phone
-                  });
-                  console.log("Document written with ID: ", docRef.id);
+                });
+                console.log("Document written with ID: ", docRef.id);
 
-                  props.navigation.navigate('Login')
+                props.navigation.navigate('Login')
             })
             .catch(error => alert(error.message))
     }
@@ -37,21 +37,26 @@ const SignupScreen = () => {
             style={styles.container}
             behavior='padding'
         >
+            <Image
+                source={require('../assets/my-icon2.jpeg')}
+                style={styles.iconStyle}
+            />
+
             <View style={styles.inputContainer}>
                 <TextInput
-                    placeholder="Fullname"
+                    placeholder="Full Name"
                     value={name}
                     onChangeText={(value) => setName(value)}
                     style={styles.input}
                 />
                 <TextInput
-                    placeholder="Phone"
+                    placeholder="Phone Number"
                     value={phone}
                     onChangeText={(value) => setPhone(value)}
                     style={styles.input}
                 />
                 <TextInput
-                    placeholder="Email"
+                    placeholder="Email Address"
                     value={email}
                     onChangeText={(value) => setEmail(value)}
                     style={styles.input}
@@ -65,11 +70,17 @@ const SignupScreen = () => {
                 />
             </View>
             <View style={styles.buttonContainer}>
-                <TouchableOpacity
+            <TouchableOpacity
                     onPress={handleSignUp}
                     style={styles.button}
                 >
-                    <Text style={styles.buttonTextOutline}>Sign Up</Text>
+                    <Text style={styles.buttonText}>S I G N  U P</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+ //                   onPress={handleSignUp}
+                    style={styles.button}
+                >
+                    <Text style={styles.buttonText}>B A C K</Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>

@@ -7,11 +7,25 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'white',
     },
+    expInputContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+    },
     body:{
         backgroundColor: 'white',
     },
     inputContainer: {
+
         width: '80%',
+        
+    },
+    homeContainer: {
+        paddingLeft: 15,
+        paddingTop:15,
+        paddingRight: 15,
+        width: '100%',
         
     },
     input: {
@@ -49,7 +63,7 @@ export const styles = StyleSheet.create({
     iconStyle: {
         resizeMode: 'contain',
         width: '60%',
-        height: '60%',
+        height: '50%',
     },
     floatingButtonStyle: {
         resizeMode: 'contain',
@@ -57,4 +71,29 @@ export const styles = StyleSheet.create({
         height: 50,
         marginBottom: 20,
     },
+    label:{
+     //   marginBottom: 10,
+        marginTop:10,
+        color: 'Black',
+        fontWeight: '900',
+        fontSize: 20,  
+       
+    },
+    listItem: {
+        backgroundColor: 'white',
+        marginTop: 15 ,
+        padding: 10,
+        borderColor: 'black',
+        borderWidth: 2,
+
+    },
+    FlatList: {
+        width: '90%',  
+    },
+    addContactsBtn:{
+        flexDirection: 'row', 
+        justifyContent: 'flex-end', 
+        borderRadius: 10,
+
+    }
 });
