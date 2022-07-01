@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, TextInput, Button, Text, Alert } from 'react-native';
 import { db } from '../firebaseConfig';
-import { collection, addDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, collection, addDoc, updateDoc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { styles } from '../styles/styles';
 
 const NoteInput = props => {
@@ -10,6 +10,8 @@ const NoteInput = props => {
     const [buttonTextValue, setButtonTextValue] = useState('SAVE');
 
     let { item, buttonText } = props.route.params
+
+    var isToUpdate = (buttonText === 'UPDATE') ? true : false;
 
     const saveItemHandler = () => {
         if (buttonText == 'SAVE') {
@@ -54,6 +56,16 @@ const NoteInput = props => {
         }
     }
 
+    const deleteDatabase = async () => {
+        try {
+            await deleteDoc(doc(db, "Expenses", "DC"));
+            console.log("Document deleted");
+            props.navigation.navigate('Home')
+        } catch (e) {
+            console.error("Error deleting document: ", e);
+        }
+    }
+
     React.useLayoutEffect(() => {
         setButtonTextValue(buttonText);
         if (buttonText == 'UPDATE') {
@@ -93,6 +105,11 @@ const NoteInput = props => {
             <View style={styles.buttonContainer} >
                 <View style={styles.button} ><Button title={buttonTextValue} onPress={saveItemHandler} color='black' /></View>
             </View>
+            { isToUpdate && 
+                <View style={styles.buttonContainer} >
+                <View style={styles.button} ><Button title="DELETE" onPress={deleteDatabase} color='black' /></View>
+            </View>
+            }
         </View>
     )
 }
