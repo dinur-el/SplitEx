@@ -51,14 +51,14 @@ const HomeScreen = (props) => {
     setExpenseList(expenseList => [...expenseList]);
   }
 
-  const saveExpenseHandler = (description, amount) => {
-    setExpenseList(expenseList => [...expenseList, { key: Math.random().toString(), value: { description: description, amount: amount } }]);
+  const saveExpenseHandler = (key, description, amount) => {
+    setExpenseList(expenseList => [...expenseList, { key: key, value: { description: description, amount: amount } }]);
   }
 
   const deleteExpenseHandler = (expenseId) => {
     let index = expenseList.findIndex((key) => key !== expenseId);
     expenseList.splice(index, 1);
-    setFuelList(expenseList => [...expenseList]);
+    setExpenseList(expenseList => [...expenseList]);
 }
 
   const handleContactList = () => {

@@ -9,13 +9,21 @@ const CreateExpense = props => {
     const [enteredDescription, setDescription] = useState();
     const [enteredAmount, setAmount] = useState();
     const [buttonTextValue, setButtonTextValue] = useState('SAVE');
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState(null);
-    const [items, setItems] = useState([]);
+    const [openParticipants, setOpenParticipants] = useState(false);
+    const [participantsValue, setParticipantsValue] = useState(null);
+    const [participantsItems, setParticipantsItems] = useState([]);
+    const [openTypes, setOpenTypes] = useState(false);
+    const [typesValue, setTypesValue] = useState('individual');
+    const [typesItems, setTypesItems] = useState([
+        { label: 'Individual', value: 'individual' },
+        { label: 'Shared', value: 'shared' }
+    ]);
 
     let { item, buttonText } = props.route.params
 
     var isToUpdate = (buttonText === 'UPDATE') ? true : false;
+    var isShared = (typesValue === 'shared') ? true : false;
+
     useEffect(() => {
         let unsubscribed = false;
 
@@ -29,7 +37,7 @@ const CreateExpense = props => {
                         value: doc.id,
                     }));
 
-                setItems(contacts);
+                setParticipantsItems(contacts);
                 // setLoading(false);
             })
             .catch((err) => {
@@ -42,10 +50,10 @@ const CreateExpense = props => {
         return () => unsubscribed = true;
     }, []);
 
-    const saveItemHandler = () => {
+    const saveItemHandler = async () => {
         if (buttonText == 'SAVE') {
-            props.onSaveItem(enteredDescription, enteredAmount);
-            saveToDatabase();
+            let key = await saveToDatabase();
+            props.onSaveItem(key, enteredDescription, enteredAmount);
 
         } else {
             props.onUpdateItem(item.key, enteredDescription, enteredAmount);
@@ -64,6 +72,8 @@ const CreateExpense = props => {
                 date: serverTimestamp()
             });
             console.log("Document written with ID: ", docRef.id);
+            return docRef.id;
+            
         } catch (e) {
             console.error("Error adding document: ", e);
         }
@@ -87,8 +97,9 @@ const CreateExpense = props => {
 
     const deleteDatabase = async () => {
         try {
-            await deleteDoc(doc(db, "Expenses", "DC"));
+            await deleteDoc(doc(db, "Expenses", item.key));
             console.log("Document deleted");
+            props.onDeleteItem(item.key);
             props.navigation.navigate('Home')
         } catch (e) {
             console.error("Error deleting document: ", e);
@@ -120,16 +131,30 @@ const CreateExpense = props => {
     return (
         <View style={styles.noteInputcontainer}>
             <View style={styles.inputContainer}>
-            <Text style={styles.label}>Participants</Text>
+                <Text style={styles.label}>Type</Text>
                 <DropDownPicker
-                    open={open}
-                    value={value}
-                    items={items}
-                    setOpen={setOpen}
-                    setValue={setValue}
-                    setItems={setItems}
-                    placeholder="Participants"
+                    open={openTypes}
+                    value={typesValue}
+                    items={typesItems}
+                    setOpen={setOpenTypes}
+                    setValue={setTypesValue}
+                    setItems={setTypesItems}
+                    placeholder="Individual"
                 />
+                {isShared &&
+                    <View style={styles.buttonContainer} >
+                        <Text style={styles.label}>Participants</Text>
+                        <DropDownPicker
+                            open={openParticipants}
+                            value={participantsValue}
+                            items={participantsItems}
+                            setOpen={setOpenParticipants}
+                            setValue={setParticipantsValue}
+                            setItems={setParticipantsItems}
+                            placeholder="Participants"
+                        />
+                    </View>
+                }
                 <Text style={styles.label}>Description</Text>
                 <TextInput
                     style={styles.input}
@@ -144,10 +169,10 @@ const CreateExpense = props => {
             <View style={styles.buttonContainer} >
                 <View style={styles.button} ><Button title={buttonTextValue} onPress={saveItemHandler} color='black' /></View>
             </View>
-            { isToUpdate && 
+            {isToUpdate &&
                 <View style={styles.buttonContainer} >
-                <View style={styles.button} ><Button title="DELETE" onPress={deleteDatabase} color='black' /></View>
-            </View>
+                    <View style={styles.button} ><Button title="DELETE" onPress={deleteDatabase} color='black' /></View>
+                </View>
             }
         </View>
     )
