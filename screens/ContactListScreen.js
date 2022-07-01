@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, SafeAreaView, TextInput, TouchableOpacity } from "react-native";
 import * as Contacts from "expo-contacts";
 import ContactItem from "./ContactItem"
+//import { styles } from "../styles/styles";
 
 
-const ContactListScreen = () => {
+const ContactListScreen = (props) => {
 
-    const [contacts, setContacts] = useState(undefined);
+    const [contacts, setContacts] = useState([]);
+    const [filteredContacts, setFilteredContacts] = useState([]);
+    const [search, setSearch] = useState('');
 
     useEffect(() => {
         (async () => {
@@ -18,7 +21,7 @@ const ContactListScreen = () => {
 
             if (data.length > 0) {
               setContacts(data)
-              //console.log(data)
+              setFilteredContacts(data)
             }
           }
         })();
@@ -29,18 +32,48 @@ const ContactListScreen = () => {
     };
 
     const renderItem = ({ item, index }) => {
-      return <ContactItem contact={item} />;
+
+      return (
+        <TouchableOpacity 
+        onPress={() => props.navigation.navigate('AddUser',{
+        item: item
+        })}>
+            <ContactItem contact={item}/>
+        </TouchableOpacity>
+        );
     };
 
+    const searchFilter = (text) => {
+      if(text){
+            const newData = contacts.filter((item) => {
+            const itemData = item.name ? item.name.toUpperCase() : ''.toUpperCase();
+            const textData = text.toUpperCase();
+            return itemData.indexOf(textData) > -1
+          });
+          setFilteredContacts(newData);
+          setSearch(text);
+      }else{
+        setFilteredContacts(contacts);
+        setSearch(text);
+      }
+    } 
+
     return(
+      <SafeAreaView>
+        <View>
+            <TextInput 
+                  style={styles.textInput}
+                  value={search}
+                  placeholder='Search here'
+                  onChangeText={ (text) => searchFilter(text) }
+            />
           <FlatList
-            data={contacts}
-            renderItem={
-                renderItem
-            }
+            data={filteredContacts}
+            renderItem={renderItem}
             keyExtractor={keyExtractor}
-            style={styles.list}
           />
+          </View>
+      </SafeAreaView>
     )
 
 }
@@ -49,6 +82,12 @@ const styles = StyleSheet.create({
     list: {
       flex: 1,
     },
+    textInput: {
+      height: 40,
+      borderWidth: 1,
+      paddingLeft: 20,
+      margin: 5
+  }
   });
 
 

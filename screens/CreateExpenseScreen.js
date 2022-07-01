@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, TextInput, Button, Text, Alert } from 'react-native';
 import { db } from '../firebaseConfig';
-import { collection, addDoc, updateDoc, serverTimestamp, getDocs } from "firebase/firestore";
+import { doc, collection, addDoc, updateDoc, deleteDoc, getDocs, serverTimestamp } from "firebase/firestore";
 import { styles } from '../styles/styles';
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -15,6 +15,7 @@ const CreateExpense = props => {
 
     let { item, buttonText } = props.route.params
 
+    var isToUpdate = (buttonText === 'UPDATE') ? true : false;
     useEffect(() => {
         let unsubscribed = false;
 
@@ -84,6 +85,16 @@ const CreateExpense = props => {
         }
     }
 
+    const deleteDatabase = async () => {
+        try {
+            await deleteDoc(doc(db, "Expenses", "DC"));
+            console.log("Document deleted");
+            props.navigation.navigate('Home')
+        } catch (e) {
+            console.error("Error deleting document: ", e);
+        }
+    }
+
     React.useLayoutEffect(() => {
         setButtonTextValue(buttonText);
         if (buttonText == 'UPDATE') {
@@ -133,6 +144,11 @@ const CreateExpense = props => {
             <View style={styles.buttonContainer} >
                 <View style={styles.button} ><Button title={buttonTextValue} onPress={saveItemHandler} color='black' /></View>
             </View>
+            { isToUpdate && 
+                <View style={styles.buttonContainer} >
+                <View style={styles.button} ><Button title="DELETE" onPress={deleteDatabase} color='black' /></View>
+            </View>
+            }
         </View>
     )
 }
