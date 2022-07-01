@@ -1,4 +1,4 @@
-import {Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native'
+import {Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { auth } from '../firebaseConfig'
@@ -37,17 +37,22 @@ const LoginScreen = (props) => {
   return (
     <KeyboardAvoidingView
     style={styles.container}
-    behavior="padding">
-      <Text>LoginScreen</Text>
+    behavior="padding"
+  >
+    <Image 
+    source={require('../assets/my-icon2.jpeg')}
+    style={styles.iconStyle}
+    />
+
       <View style={styles.inputContainer}>
         <TextInput 
-          placeholder='email'
+          placeholder='User ID'
           value={email}
           onChangeText={ text => setEmail(text) }
           style={styles.input}
         />
         <TextInput 
-          placeholder='password'
+          placeholder='Password'
           value={password}
           onChangeText={ text => setPassword(text)}
           style={styles.input}
@@ -57,14 +62,15 @@ const LoginScreen = (props) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
           onPress={handleLogin}
-          style={[styles.button, styles.buttonOutline]}>
-            <Text>Login</Text>
+          style={[styles.button, ]}>
+            <Text style={ styles.buttonText}>L O G I N</Text>
         </TouchableOpacity>
+ 
         <TouchableOpacity 
-            style={[ styles.button, styles.buttonOutline ]}
+            style={[ styles.button,  ]}
             onPress={() => props.navigation.replace('Signup')}
         >
-            <Text style={ styles.buttonTextOutline }>Sign Up</Text>
+            <Text style={ styles.buttonText}>R E G I S T E R</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
