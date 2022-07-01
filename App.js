@@ -5,6 +5,7 @@ import HomeScreen from './screens/HomeScreen';
 import SignupScreen from './screens/SignupScreen';
 import CreateExpenseScreen from './screens/CreateExpenseScreen';
 import ContactListScreen from './screens/ContactListScreen';
+import AddUserScreen from './screens/AddUserScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ export default function App() {
           {(props) => <CreateExpenseScreen {...props} onSaveItem={props.route.params.onSaveItem} />}
         </Stack.Screen>
         <Stack.Screen name="ContactList" component={ContactListScreen} />
+        <Stack.Screen name="AddUser" component={AddUserScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
