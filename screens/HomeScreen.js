@@ -99,7 +99,7 @@ const HomeScreen = (props) => {
       </TouchableOpacity>
       </View> 
       
-      <View style={styles.buttonContainer}>
+      <View style={styles.createExpenseBtn}>
         <TouchableOpacity
           style={styles.button}
           onPress={() => props.navigation.navigate(
@@ -111,14 +111,8 @@ const HomeScreen = (props) => {
             })}
 
         >
-          <Text style={styles.buttonText}>CREATE EXPENSE</Text>
+          <Text style={styles.buttonText}>CREATE NEW EXPENSE</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity
-        style={[styles.button, styles.buttonOutline]}
-        onPress={handleSignOut}
-      >
-        <Text style={styles.buttonText}>Sign out</Text>
-      </TouchableOpacity> */}
       </View>
 
       {/* <View style={styles.expInputContainer}> */}

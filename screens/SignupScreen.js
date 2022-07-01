@@ -6,7 +6,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { db } from '../firebaseConfig';
 import { collection, addDoc } from "firebase/firestore";
 
-const SignupScreen = () => {
+const SignupScreen = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [phone, setPhone] = useState('');

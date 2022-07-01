@@ -41,6 +41,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 40,
+        marginBottom: 40,
     },
     button: {
         backgroundColor: '#0782F9',
@@ -94,6 +95,60 @@ export const styles = StyleSheet.create({
         flexDirection: 'row', 
         justifyContent: 'flex-end', 
         borderRadius: 10,
+    },
+    createExpenseBtn:{
+   //     flexDirection: 'row', 
+    //    justifyContent: 'flex-start', 
+        borderRadius: 10,
+        width: '50%',
 
-    }
+       
+    },
+
+    textInput: {
+        height: 40,
+        borderWidth: 1,
+        paddingLeft: 20,
+        margin: 5
+    },
+
+
+
+
+    contactCon: {
+        flex: 1,
+        flexDirection: 'row',
+        padding: 5,
+        borderBottomWidth: 0.5,
+        borderBottomColor: '#d9d9d9',
+      },
+      imgCon: {
+        marginTop: 20,
+      },
+      placeholder: {
+        width: 100,
+        height: 100,
+        borderRadius: 30,
+        overflow: 'hidden',
+        backgroundColor: '#d9d9d9',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      contactDat: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingLeft: 5,
+      },
+      txt: {
+        fontSize: 18,
+      },
+      name: {
+        fontWeight: '900',
+        fontSize: 25, 
+      },
+      phoneNumber: {
+        color: '#888',
+        fontSize: 35, 
+      },
 });
