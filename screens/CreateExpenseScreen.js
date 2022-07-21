@@ -9,7 +9,7 @@ const CreateExpense = props => {
     const [enteredDescription, setDescription] = useState();
     const [enteredAmount, setAmount] = useState();
     const [openParticipants, setOpenParticipants] = useState(false);
-    const [participantsValue, setParticipantsValue] = useState(null);
+    const [participantsValue, setParticipantsValue] = useState([]);
     const [participantsItems, setParticipantsItems] = useState([]);
     const [openTypes, setOpenTypes] = useState(false);
     const [typesValue, setTypesValue] = useState('individual');
@@ -155,6 +155,9 @@ const CreateExpense = props => {
                             setValue={setParticipantsValue}
                             setItems={setParticipantsItems}
                             placeholder="Participants"
+                            multiple={true}
+                            min={0}
+                            max={5}
                         />
                     </View>
                 }
