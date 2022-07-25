@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, Button, Text, Alert, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, Alert, TouchableOpacity } from 'react-native';
 import { db } from '../firebaseConfig';
 import { doc, collection, addDoc, updateDoc, deleteDoc, getDocs, serverTimestamp } from "firebase/firestore";
 import { styles } from '../styles/styles';
+import SelectBox from 'react-native-multi-selectbox'
+import { xorBy } from 'lodash'
 import DropDownPicker from 'react-native-dropdown-picker';
 
 const CreateExpense = props => {
@@ -10,48 +12,55 @@ const CreateExpense = props => {
     const [enteredAmount, setAmount] = useState();
     const [openParticipants, setOpenParticipants] = useState(false);
     const [participantsValue, setParticipantsValue] = useState(null);
+    
+    // contactList
     const [participantsItems, setParticipantsItems] = useState([]);
+
+    // selected participants for sharing
+    const [selectedParticipants, setSelectedParticipants] = useState([]);
+
     const [openTypes, setOpenTypes] = useState(false);
     const [typesValue, setTypesValue] = useState('individual');
     const [typesItems, setTypesItems] = useState([
         { label: 'Individual', value: 'individual' },
         { label: 'Shared', value: 'shared' }
     ]);
-    const [buttonTextValue, setButtonTextValue] = useState('S A V E');
 
+ 
+    const [buttonTextValue, setButtonTextValue] = useState('S A V E');
 
     let { item, buttonText } = props.route.params
 
     var isToUpdate = (buttonText === 'U P D A T E') ? true : false;
     
-
     var isShared = (typesValue === 'shared') ? true : false;
 
     useEffect(() => {
         let unsubscribed = false;
-
         getDocs(collection(db, "ContactList"))
             .then((querySnapshot) => {
                 if (unsubscribed) return; // unsubscribed? do nothing.
 
-                const contacts = querySnapshot.docs
+                let contacts = querySnapshot.docs
                     .map((doc) => ({
-                        label: doc.data().name,
-                        value: doc.id,
+                        // in order to select as multipe i need to have item and id keys
+                        item: doc.data().name,
+                        phone: doc.data().phone,
+                        id: doc.id,
                     }));
-
+                
                 setParticipantsItems(contacts);
                 // setLoading(false);
             })
             .catch((err) => {
-                if (unsubscribed) return; // unsubscribed? do nothing.
-
-                // TODO: Handle errors
+                if (unsubscribed) return;
                 console.error("Failed to retrieve data", err);
             });
 
+
         return () => unsubscribed = true;
     }, []);
+
 
     const saveItemHandler = async () => {
         if (buttonText == 'S A V E') {
@@ -72,7 +81,8 @@ const CreateExpense = props => {
             const docRef = await addDoc(collection(db, "Expenses"), {
                 description: enteredDescription,
                 amount: enteredAmount,
-                date: serverTimestamp()
+                date: serverTimestamp(),
+                //participants: selectedParticipants
             });
             console.log("Document written with ID: ", docRef.id);
             return docRef.id;
@@ -145,18 +155,20 @@ const CreateExpense = props => {
                     placeholder="Individual"
                 />
                 {isShared &&
-                    <View style={styles.buttonContainer} >
-                        <Text style={styles.label}>Participants</Text>
-                        <DropDownPicker
-                            open={openParticipants}
-                            value={participantsValue}
-                            items={participantsItems}
-                            setOpen={setOpenParticipants}
-                            setValue={setParticipantsValue}
-                            setItems={setParticipantsItems}
-                            placeholder="Participants"
+
+                    <View>
+                        <View style={{ height: 40 }} />
+                            <Text style={{ fontSize: 20, paddingBottom: 10 }}>MultiSelect Demo</Text>
+                            <SelectBox
+                                label="Select multiple"
+                                options={participantsItems}
+                                selectedValues={selectedParticipants}
+                                onMultiSelect={onMultiChange()}
+                                onTapClose={onMultiChange()}
+                                isMulti
                         />
                     </View>
+
                 }
                 <Text style={styles.label}>Description</Text>
                 <TextInput
@@ -199,6 +211,11 @@ const CreateExpense = props => {
              </View>
         </View>
     )
+
+    function onMultiChange() {
+        return (item) => setSelectedParticipants(xorBy(selectedParticipants, [item], 'id'))
+      }
+
 }
 
 export default CreateExpense; 
