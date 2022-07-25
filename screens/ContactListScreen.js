@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, SafeAreaView, TextInput, TouchableOpacity } from "react-native";
 import * as Contacts from "expo-contacts";
-import ContactItem from "./ContactItem"
+import ContactItem from "../components/ContactItem"
 //import { styles } from "../styles/styles";
 
 
