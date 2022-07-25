@@ -1,13 +1,16 @@
 import {Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, Image } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useState, useEffect } from 'react'
 import { auth } from '../firebaseConfig'
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { useNavigation } from '@react-navigation/core'
 import { styles } from '../styles/styles';
+import { UserContext } from '../store/user-context'
 
 
 const LoginScreen = (props) => {
+  const userCtx = useContext(UserContext);
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -15,13 +18,15 @@ const LoginScreen = (props) => {
     signInWithEmailAndPassword(auth, email, password)
     .then( userCredentials => {
         const user = userCredentials.user
-        console.log( `user logged in with ${user.email}`)
+        console.log( `user logged in with ${user}`)
     }).catch( error => alert(error.message))
   }
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       if(user){
+        console.log( `user logged in with ${user.uid}`)
+        userCtx.setUser(user.uid)
         props.navigation.navigate('Home')
       }
       else{

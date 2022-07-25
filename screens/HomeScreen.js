@@ -1,23 +1,25 @@
 
 import { Image, Text, View, TouchableOpacity, FlatList } from 'react-native'
 import React from 'react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { auth } from '../firebaseConfig'
 import { signOut } from 'firebase/auth'
 import { styles } from '../styles/styles';
 import ExpenseListItem from '../components/ExpenseListItem';
 import { ActivityIndicator } from 'react-native';
 import { db } from '../firebaseConfig';
-import { collection, getDocs } from "firebase/firestore";
+import { collectionGroup, getDocs } from "firebase/firestore";
+import { UserContext } from '../store/user-context'
 
 const HomeScreen = (props) => {
+  const userCtx = useContext(UserContext);
   const [expenseList, setExpenseList] = useState([]);
   const [loading, setLoading] = useState(true); // Set loading to true on component mount
 
   useEffect(() => {
     let unsubscribed = false;
-
-    getDocs(collection(db, "Expenses"))
+    console.log("id in context.....",userCtx.id)
+    getDocs(collectionGroup(db, "Expenses"))
       .then((querySnapshot) => {
         if (unsubscribed) return; // unsubscribed? do nothing.
 
