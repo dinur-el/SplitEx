@@ -4,7 +4,7 @@ import { styles } from '../styles/styles';
 import { auth } from '../firebaseConfig'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { db } from '../firebaseConfig';
-import { collection, addDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 
 const SignupScreen = (props) => {
     const [email, setEmail] = useState('');
@@ -18,14 +18,13 @@ const SignupScreen = (props) => {
         createUserWithEmailAndPassword(auth, email, password)
             .then(async (userCredentials) => {
                 const user = userCredentials.user;
-                console.log(user.email);
+                console.log(user.uid);
 
-                const docRef = await addDoc(collection(db, "Users"), {
+                await setDoc(doc(db, "Users", user.uid.toString()), {
                     name: name,
                     email: email,
                     phone: phone
                 });
-                console.log("Document written with ID: ", docRef.id);
 
                 props.navigation.navigate('Login')
             })

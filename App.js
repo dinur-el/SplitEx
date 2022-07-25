@@ -6,30 +6,33 @@ import SignupScreen from './screens/SignupScreen';
 import CreateExpenseScreen from './screens/CreateExpenseScreen';
 import ContactListScreen from './screens/ContactListScreen';
 import AddUserScreen from './screens/AddUserScreen';
+import UserContextProvider from './store/user-context';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator 
-        initialRouteName="Login" 
-      >
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Signup" component={SignupScreen} /> 
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen
-          name="CreateExpense"
-          options={{
-            title: 'Create Expense',
-          }}
+    <UserContextProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Login"
         >
-          {(props) => <CreateExpenseScreen {...props} onSaveItem={props.route.params.onSaveItem} onUpdateItem={props.route.params.onUpdateItem} onDeleteItem={props.route.params.onDeleteItem} />}
-        </Stack.Screen>
-        <Stack.Screen name="ContactList" component={ContactListScreen} />
-        <Stack.Screen name="AddUser" component={AddUserScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Signup" component={SignupScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen
+            name="CreateExpense"
+            options={{
+              title: 'Create Expense',
+            }}
+          >
+            {(props) => <CreateExpenseScreen {...props} onSaveItem={props.route.params.onSaveItem} onUpdateItem={props.route.params.onUpdateItem} onDeleteItem={props.route.params.onDeleteItem} />}
+          </Stack.Screen>
+          <Stack.Screen name="ContactList" component={ContactListScreen} />
+          <Stack.Screen name="AddUser" component={AddUserScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserContextProvider>
   );
 }
 

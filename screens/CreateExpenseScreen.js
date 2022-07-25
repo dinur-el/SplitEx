@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, TextInput, Button, Text, Alert, TouchableOpacity } from 'react-native';
 import { db } from '../firebaseConfig';
-import { doc, collection, addDoc, updateDoc, deleteDoc, getDocs, serverTimestamp } from "firebase/firestore";
+import { doc, collection, collectionGroup, addDoc, updateDoc, deleteDoc, getDocs, serverTimestamp } from "firebase/firestore";
 import { styles } from '../styles/styles';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { UserContext } from '../store/user-context'
 
 const CreateExpense = props => {
+    const userCtx = useContext(UserContext);
     const [enteredDescription, setDescription] = useState();
     const [enteredAmount, setAmount] = useState();
     const [openParticipants, setOpenParticipants] = useState(false);
@@ -23,14 +25,14 @@ const CreateExpense = props => {
     let { item, buttonText } = props.route.params
 
     var isToUpdate = (buttonText === 'U P D A T E') ? true : false;
-    
+
 
     var isShared = (typesValue === 'shared') ? true : false;
 
     useEffect(() => {
         let unsubscribed = false;
 
-        getDocs(collection(db, "ContactList"))
+        getDocs(collectionGroup(db, "ContactList"))
             .then((querySnapshot) => {
                 if (unsubscribed) return; // unsubscribed? do nothing.
 
@@ -69,14 +71,18 @@ const CreateExpense = props => {
 
     const saveToDatabase = async () => {
         try {
-            const docRef = await addDoc(collection(db, "Expenses"), {
+
+            const userDocRef = doc(db, "Users", userCtx.id);
+            const expensesColRef = collection(userDocRef, "Expenses")
+            const expenseDocRef = await addDoc(expensesColRef, {
                 description: enteredDescription,
                 amount: enteredAmount,
                 date: serverTimestamp()
             });
-            console.log("Document written with ID: ", docRef.id);
-            return docRef.id;
-            
+
+            console.log("Document written with ID: ", expenseDocRef.id);
+            return expenseDocRef.id;
+
         } catch (e) {
             console.error("Error adding document: ", e);
         }
@@ -84,9 +90,8 @@ const CreateExpense = props => {
 
     const updateDatabase = async () => {
         try {
-            const expenseRef = doc(db, "Expenses", item.key);
+            const expenseRef = doc(db, `Users/${userCtx.id}/Expenses`, item.key);
 
-            // Set the "capital" field of the city 'DC'
             await updateDoc(expenseRef, {
                 description: enteredDescription,
                 amount: enteredAmount,
@@ -100,7 +105,7 @@ const CreateExpense = props => {
 
     const deleteDatabase = async () => {
         try {
-            await deleteDoc(doc(db, "Expenses", item.key));
+            await deleteDoc(doc(db, `Users.${userCtx.id}.Expenses`, item.key));
             console.log("Document deleted");
             props.onDeleteItem(item.key);
             props.navigation.navigate('Home')
@@ -120,7 +125,7 @@ const CreateExpense = props => {
     const successAlert = () => {
         Alert.alert(
             'SUCCESS',
-            'Note saved Successfully',
+            'Expense saved Successfully',
             [
                 {
                     text: 'OK',
@@ -189,17 +194,17 @@ const CreateExpense = props => {
                     <Text style={styles.buttonText}>{buttonTextValue}</Text>
                 </TouchableOpacity>
 
-           
-            {isToUpdate &&
 
-                <TouchableOpacity
-                    onPress={deleteDatabase}
-                    style={[styles.button,]}>
-                    <Text style={styles.buttonText}>D E L E T E</Text>
-                </TouchableOpacity>
+                {isToUpdate &&
 
-            }
-             </View>
+                    <TouchableOpacity
+                        onPress={deleteDatabase}
+                        style={[styles.button,]}>
+                        <Text style={styles.buttonText}>D E L E T E</Text>
+                    </TouchableOpacity>
+
+                }
+            </View>
         </View>
     )
 }
