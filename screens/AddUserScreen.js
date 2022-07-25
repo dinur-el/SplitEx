@@ -14,6 +14,7 @@ const AddUserScreen = (props) => {
     props.navigation.navigate('Home')
   }
 
+  //console.log(user)
   const saveToDatabase = async () => {
     try {
       const userDocRef = doc(db, "Users", userCtx.id);
