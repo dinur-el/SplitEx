@@ -7,6 +7,7 @@ import CreateExpenseScreen from './screens/CreateExpenseScreen';
 import ContactListScreen from './screens/ContactListScreen';
 import AddUserScreen from './screens/AddUserScreen';
 import UserContextProvider from './store/user-context';
+import CalculateExpenseScreen from './screens/CalculateExpenseScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,7 @@ export default function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Calculate" component={CalculateExpenseScreen} />
           <Stack.Screen
             name="CreateExpense"
             options={{

@@ -1,7 +1,6 @@
-
-import { Image, Text, View, TouchableOpacity, FlatList } from 'react-native'
 import React from 'react'
 import { useState, useEffect, useContext } from 'react'
+import { Image, Text, View, TouchableOpacity, FlatList } from 'react-native'
 import { auth } from '../firebaseConfig'
 import { signOut } from 'firebase/auth'
 import { styles } from '../styles/styles';

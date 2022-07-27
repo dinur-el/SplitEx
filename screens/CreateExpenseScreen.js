@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-import { View, TextInput, Text, Alert, TouchableOpacity } from 'react-native';
-=======
 import React, { useState, useEffect, useContext } from "react";
 import { View, TextInput, Button, Text, Alert, TouchableOpacity } from 'react-native';
->>>>>>> 19c3b06f8cae499800440bc6df62ac4644e62686
 import { db } from '../firebaseConfig';
 import { doc, collection, collectionGroup, addDoc, updateDoc, deleteDoc, getDocs, serverTimestamp } from "firebase/firestore";
 import { styles } from '../styles/styles';
@@ -16,15 +11,11 @@ import { UserContext } from '../store/user-context'
 const CreateExpense = props => {
     const userCtx = useContext(UserContext);
     const [enteredDescription, setDescription] = useState();
-    const [enteredAmount, setAmount] = useState();
+    const [enteredAmount, setAmount] = useState(0);
     const [openParticipants, setOpenParticipants] = useState(false);
-<<<<<<< HEAD
     const [participantsValue, setParticipantsValue] = useState(null);
     
     // contactList
-=======
-    const [participantsValue, setParticipantsValue] = useState([]);
->>>>>>> 19c3b06f8cae499800440bc6df62ac4644e62686
     const [participantsItems, setParticipantsItems] = useState([]);
 
     // selected participants for sharing
@@ -43,22 +34,14 @@ const CreateExpense = props => {
     let { item, buttonText } = props.route.params
 
     var isToUpdate = (buttonText === 'U P D A T E') ? true : false;
-<<<<<<< HEAD
-    
-=======
 
 
->>>>>>> 19c3b06f8cae499800440bc6df62ac4644e62686
     var isShared = (typesValue === 'shared') ? true : false;
 
     useEffect(() => {
         let unsubscribed = false;
-<<<<<<< HEAD
-        getDocs(collection(db, "ContactList"))
-=======
 
         getDocs(collectionGroup(db, "ContactList"))
->>>>>>> 19c3b06f8cae499800440bc6df62ac4644e62686
             .then((querySnapshot) => {
                 if (unsubscribed) return; // unsubscribed? do nothing.
 
@@ -95,6 +78,20 @@ const CreateExpense = props => {
         setDescription("");
         setAmount("");
         successAlert();
+    }
+
+    // send partcipants and total to CalculateExpenseScreen
+    const calculateAmountHandler = () => {
+
+        if(enteredAmount > 0 && selectedParticipants.length > 0){
+                props.navigation.navigate('Calculate', {
+                    total: enteredAmount,
+                    participants: selectedParticipants
+                })
+        }else{
+            return
+        }
+
     }
 
     const saveToDatabase = async () => {
@@ -179,7 +176,6 @@ const CreateExpense = props => {
                     placeholder="Individual"
                 />
                 {isShared &&
-<<<<<<< HEAD
 
                     <View>
                         <View style={{ height: 40 }} />
@@ -191,21 +187,6 @@ const CreateExpense = props => {
                                 onMultiSelect={onMultiChange()}
                                 onTapClose={onMultiChange()}
                                 isMulti
-=======
-                    <View style={styles.buttonContainer} >
-                        <Text style={styles.label}>Participants</Text>
-                        <DropDownPicker
-                            open={openParticipants}
-                            value={participantsValue}
-                            items={participantsItems}
-                            setOpen={setOpenParticipants}
-                            setValue={setParticipantsValue}
-                            setItems={setParticipantsItems}
-                            placeholder="Participants"
-                            multiple={true}
-                            min={0}
-                            max={5}
->>>>>>> 19c3b06f8cae499800440bc6df62ac4644e62686
                         />
                     </View>
 
@@ -238,6 +219,12 @@ const CreateExpense = props => {
                     <Text style={styles.buttonText}>{buttonTextValue}</Text>
                 </TouchableOpacity>
 
+{/* split options  */}
+                <TouchableOpacity
+                    onPress={calculateAmountHandler}
+                    style={[styles.button,]}>
+                    <Text style={styles.buttonText}>Split options</Text>
+                </TouchableOpacity>
 
                 {isToUpdate &&
 
