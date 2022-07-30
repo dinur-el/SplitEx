@@ -6,13 +6,13 @@ import { styles } from '../styles/styles';
 import SelectBox from 'react-native-multi-selectbox'
 import { xorBy } from 'lodash'
 import DropDownPicker from 'react-native-dropdown-picker';
-import { UserContext } from '../store/user-context'
+import { UserContext } from '../context/user-context'
 
 const CreateExpense = props => {
     const userCtx = useContext(UserContext);
     const [enteredDescription, setDescription] = useState("");
     const [enteredAmount, setAmount] = useState();
-    
+
     // contactList
     const [participantsItems, setParticipantsItems] = useState([]);
 
@@ -25,13 +25,13 @@ const CreateExpense = props => {
         { label: 'Individual', value: 'individual' },
         { label: 'Shared', value: 'shared' }
     ]);
- 
+
     const [buttonTextValue, setButtonTextValue] = useState('S A V E');
 
     let { item, buttonText } = props.route.params
 
     var isToUpdate = (buttonText === 'U P D A T E') ? true : false;
-    
+
     var isShared = (typesValue === 'shared') ? true : false;
 
     useEffect(() => {
@@ -45,12 +45,12 @@ const CreateExpense = props => {
                     .map((doc) => ({
                         // in order to select as multipe i need to have item and id keys
                         item: doc.data().name,
-                        phone: doc.data().phone,
                         id: doc.id,
+                        userId: doc.data().userId
                     }));
-                
+
                 setParticipantsItems(contacts);
-                // setLoading(false);
+                console.log(contacts);
             })
             .catch((err) => {
                 if (unsubscribed) return;
@@ -82,7 +82,7 @@ const CreateExpense = props => {
                 description: enteredDescription,
                 amount: enteredAmount,
                 date: serverTimestamp(),
-                //participants: selectedParticipants
+                participants: setupParticipants()
             });
 
             console.log("Document written with ID: ", expenseDocRef.id);
@@ -100,6 +100,7 @@ const CreateExpense = props => {
             await updateDoc(expenseRef, {
                 description: enteredDescription,
                 amount: enteredAmount,
+                participants: setupParticipants()
             });
 
             console.log("Document updated");
@@ -141,6 +142,32 @@ const CreateExpense = props => {
         );
     }
 
+    // send partcipants and total to CalculateExpenseScreen
+    const calculateAmountHandler = () => {
+
+        if (enteredAmount > 0 && selectedParticipants.length > 0) {
+            props.navigation.navigate('Calculate', {
+                onChangeParticipants: changeParticipantsHandler,
+                total: enteredAmount,
+                participants: setupParticipants()
+            })
+        } else {
+            return
+        }
+    }
+
+    const setupParticipants = () => {
+        return selectedParticipants.map((participant) => ({
+            userId: participant.userId,
+            name: participant.item,
+            share: 1/(selectedParticipants.length + 1)
+        }));
+    }
+
+    const changeParticipantsHandler = (participants) => {
+        setSelectedParticipants(participants);
+    }
+
     return (
         <View style={styles.expInputContainer}>
             <View style={styles.inputContainer}>
@@ -158,14 +185,14 @@ const CreateExpense = props => {
 
                     <View>
                         <View style={{ height: 40 }} />
-                            <Text style={{ fontSize: 20, paddingBottom: 10 }}>MultiSelect Demo</Text>
-                            <SelectBox
-                                label="Select multiple"
-                                options={participantsItems}
-                                selectedValues={selectedParticipants}
-                                onMultiSelect={onMultiChange()}
-                                onTapClose={onMultiChange()}
-                                isMulti
+                        <Text style={{ fontSize: 20, paddingBottom: 10 }}>Participants</Text>
+                        <SelectBox
+                            label="Select Participants"
+                            options={participantsItems}
+                            selectedValues={selectedParticipants}
+                            onMultiSelect={onMultiChange()}
+                            onTapClose={onMultiChange()}
+                            isMulti
                         />
                     </View>
 
@@ -199,13 +226,21 @@ const CreateExpense = props => {
                     </TouchableOpacity>
 
                 }
+
+                {/* split options  */}
+                <TouchableOpacity
+                    onPress={calculateAmountHandler}
+                    style={[styles.button]}>
+                    <Text style={styles.buttonText}>Split options</Text>
+                </TouchableOpacity>
+
             </View>
         </View>
     )
 
     function onMultiChange() {
         return (item) => setSelectedParticipants(xorBy(selectedParticipants, [item], 'id'))
-      }
+    }
 
 }
 

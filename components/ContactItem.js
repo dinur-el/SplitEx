@@ -3,18 +3,10 @@ import { View, Text, StyleSheet } from "react-native";
 
 const ContactItem = ({ contact }) => {
 
-  //console.log(contact)
-  //console.log(contact)
-  
-  //console.log(contact?.phoneNumbers[])
-
   return (
     <View style={styles.contactCon}>
       <View style={styles.contactDat}>
         <Text style={styles.name}>{contact?.name}</Text>
-        {/* <Text style={styles.phoneNumber}>
-          {contact?.phoneNumbers?.number}
-        </Text> */}
       </View>
     </View>
   );

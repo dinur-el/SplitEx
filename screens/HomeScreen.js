@@ -2,14 +2,13 @@
 import { Image, Text, View, TouchableOpacity, FlatList, Alert, Platform } from 'react-native'
 import React from 'react'
 import { useState, useEffect, useContext } from 'react'
-import { auth } from '../firebaseConfig'
+import { auth, db } from '../firebaseConfig'
 import { signOut } from 'firebase/auth'
 import { styles } from '../styles/styles';
 import ExpenseListItem from '../components/ExpenseListItem';
 import { ActivityIndicator } from 'react-native';
-import { db } from '../firebaseConfig';
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
-import { UserContext } from '../store/user-context';
+import { UserContext } from '../context/user-context';
 import * as Notifications from 'expo-notifications';
 
 Notifications.setNotificationHandler({
