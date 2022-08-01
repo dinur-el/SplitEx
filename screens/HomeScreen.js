@@ -7,7 +7,7 @@ import { styles } from '../styles/styles';
 import ExpenseListItem from '../components/ExpenseListItem';
 import { ActivityIndicator } from 'react-native';
 import { db } from '../firebaseConfig';
-import { collectionGroup, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { UserContext } from '../store/user-context'
 
 const HomeScreen = (props) => {
@@ -18,7 +18,7 @@ const HomeScreen = (props) => {
   useEffect(() => {
     let unsubscribed = false;
     console.log("id in context.....",userCtx.id)
-    getDocs(collectionGroup(db, "Expenses"))
+    getDocs(collection(db, "Expenses"))
       .then((querySnapshot) => {
         if (unsubscribed) return; // unsubscribed? do nothing.
 
@@ -104,7 +104,6 @@ const HomeScreen = (props) => {
         </TouchableOpacity>
       </View>
 
-      {/* <View style={styles.expInputContainer}> */}
       <FlatList
         data={expenseList}
         renderItem={
@@ -124,23 +123,6 @@ const HomeScreen = (props) => {
           )
         }
       />
-      {/* </View> */}
-      {/* <TouchableOpacity
-        activeOpacity={0.7}
-        style={styles.addButton}
-        onPress={() => props.navigation.navigate(
-          'CreateExpense',
-          {
-            onSaveItem: saveExpenseHandler,
-            onUpdateItem: updateExpenseHandler,
-            buttonText: "S A V E"
-          })}
-      >
-        <Image
-          source={require('../assets/add-expense.png')}
-          style={styles.floatingButtonStyle}
-        />
-      </TouchableOpacity> */}
     </View>
   )
 }

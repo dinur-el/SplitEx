@@ -151,4 +151,22 @@ export const styles = StyleSheet.create({
         color: '#888',
         fontSize: 35, 
       },
+
+
+      // calculate screen styles
+
+      // list item container
+      listItemContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        borderWidth: 1,
+        borderColor: 'black',
+      },
+      
+      listDetailsContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+      }
 });

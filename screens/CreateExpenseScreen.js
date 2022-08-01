@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, TextInput, Button, Text, Alert, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, Alert, TouchableOpacity } from 'react-native';
 import { db } from '../firebaseConfig';
 import { doc, collection, collectionGroup, addDoc, updateDoc, deleteDoc, getDocs, serverTimestamp } from "firebase/firestore";
 import { styles } from '../styles/styles';
@@ -10,10 +10,8 @@ import { UserContext } from '../store/user-context'
 
 const CreateExpense = props => {
     const userCtx = useContext(UserContext);
-    const [enteredDescription, setDescription] = useState();
-    const [enteredAmount, setAmount] = useState(0);
-    const [openParticipants, setOpenParticipants] = useState(false);
-    const [participantsValue, setParticipantsValue] = useState(null);
+    const [enteredDescription, setDescription] = useState("");
+    const [enteredAmount, setAmount] = useState();
     
     // contactList
     const [participantsItems, setParticipantsItems] = useState([]);
@@ -27,15 +25,13 @@ const CreateExpense = props => {
         { label: 'Individual', value: 'individual' },
         { label: 'Shared', value: 'shared' }
     ]);
-
  
     const [buttonTextValue, setButtonTextValue] = useState('S A V E');
 
     let { item, buttonText } = props.route.params
 
     var isToUpdate = (buttonText === 'U P D A T E') ? true : false;
-
-
+    
     var isShared = (typesValue === 'shared') ? true : false;
 
     useEffect(() => {
@@ -94,12 +90,17 @@ const CreateExpense = props => {
 
     }
 
+    // pass this method as a prop to CalculateExpensScreen
+    const saveSharedExpenseParticipantHandler = () => {
+        //pass the participantsExpenseList as a prop to createExpenseScreen
+
+
+    }
+
+
     const saveToDatabase = async () => {
         try {
-
-            const userDocRef = doc(db, "Users", userCtx.id);
-            const expensesColRef = collection(userDocRef, "Expenses")
-            const expenseDocRef = await addDoc(expensesColRef, {
+            const expenseDocRef = await addDoc(collection(db, "Expenses"), {
                 description: enteredDescription,
                 amount: enteredAmount,
                 date: serverTimestamp(),
@@ -116,7 +117,7 @@ const CreateExpense = props => {
 
     const updateDatabase = async () => {
         try {
-            const expenseRef = doc(db, `Users/${userCtx.id}/Expenses`, item.key);
+            const expenseRef = doc(db, "Expenses", item.key);
 
             await updateDoc(expenseRef, {
                 description: enteredDescription,
@@ -131,7 +132,7 @@ const CreateExpense = props => {
 
     const deleteDatabase = async () => {
         try {
-            await deleteDoc(doc(db, `Users.${userCtx.id}.Expenses`, item.key));
+            await deleteDoc(doc(db, "Expenses", item.key));
             console.log("Document deleted");
             props.onDeleteItem(item.key);
             props.navigation.navigate('Home')
@@ -179,7 +180,7 @@ const CreateExpense = props => {
 
                     <View>
                         <View style={{ height: 40 }} />
-                            <Text style={{ fontSize: 20, paddingBottom: 10 }}>MultiSelect Demo</Text>
+                            <Text style={styles.label}>Select participants</Text>
                             <SelectBox
                                 label="Select multiple"
                                 options={participantsItems}
@@ -201,15 +202,6 @@ const CreateExpense = props => {
                     style={styles.input}
                     onChangeText={(value) => setAmount(value)}
                     value={enteredAmount} />
-                {/* <DropDownPicker
-                    open={open}
-                    value={value}
-                    items={items}
-                    setOpen={setOpen}
-                    setValue={setValue}
-                    setItems={setItems}
-                    placeholder="Participants"
-                /> */}
             </View>
             <View style={styles.buttonContainer} >
 
