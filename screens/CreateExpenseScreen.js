@@ -76,6 +76,29 @@ const CreateExpense = props => {
         successAlert();
     }
 
+    // by dumidu
+    // send partcipants and total to CalculateExpenseScreen
+    // const calculateAmountHandler = () => {
+
+    //     if(enteredAmount > 0 && selectedParticipants.length > 0){
+    //             props.navigation.navigate('Calculate', {
+    //                 total: enteredAmount,
+    //                 participants: selectedParticipants
+    //             })
+    //     }else{
+    //         return
+    //     }
+
+    // }
+
+    // pass this method as a prop to CalculateExpensScreen
+    // const saveSharedExpenseParticipantHandler = () => {
+    //     //pass the participantsExpenseList as a prop to createExpenseScreen
+
+
+    // }
+
+
     const saveToDatabase = async () => {
         try {
             const expenseDocRef = await addDoc(collection(db, "Expenses"), {
@@ -215,7 +238,6 @@ const CreateExpense = props => {
                     style={[styles.button,]}>
                     <Text style={styles.buttonText}>{buttonTextValue}</Text>
                 </TouchableOpacity>
-
 
                 {isToUpdate &&
 

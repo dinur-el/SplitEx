@@ -1,170 +1,245 @@
-// VARIABLES
-// render participants
-// total expense
-// state to maintain remainder - optional
-
-// how to do
-// display participants in a flatlist
-// flatlist -> each needs to have a text field to add amount
-// save button
-// once set, go back to create expense
-
 import React, { useState } from 'react'
-import { View, SafeAreaView, Picker, Text, TextInput, TouchableOpacity, FlatList } from 'react-native'
+import { View, SafeAreaView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker';
+import { AntDesign } from '@expo/vector-icons'
+import { StackActions } from '@react-navigation/native';
+import { styles } from '../styles/styles';
 
 const CalculateExpenseScreen = ( props ) => {
 
     const { total, participants } = props.route.params
-    console.log(participants)
-    const [selected, setSelected] = useState(0)
+
+    const [ balance, setBalance ] = useState(total)
+
+    const popAction = StackActions.pop(1);
+
+    // type of payment 
+    //const [selected, setSelected] = useState(0)
+
+    // to store a single participant contribution value
+    const [ value, setValue ] = useState([]);
+
+
+    const [ txtInput, setTxtinput ] = useState()
+
+    // this state has to hold participant id, name and individual value
+    const [participantExpenseList, setParticipantExpenseList] = useState([]);
+
+    const equal = total / participants.length
+
+
+    // for dropdown picker
 
     const [openTypes, setOpenTypes] = useState(false);
+
     const [typesValue, setTypesValue] = useState('0');
+
     const [typesItems, setTypesItems] = useState([
-        { label: 'Equally', value: '0' },
-        { label: 'Exact Amount', value: '1' },
-        { label: 'Percentage', value: '2' }
+    { label: 'Equally', value: '0' },
+    { label: 'Exact Amount', value: '1' },
+    { label: 'Percentage', value: '2' }
     ]);
 
-    // add a picker to select split equally, exact amount, percentage (optional)
 
-    // if equally display textInput with divided amount
-    // if amount or percentage empty textinput
+    // // exp
+
+    // useEffect(() => {
+        
+    //     participants.forEach((paricipant) => {
+    //         setValue( value => [...value, { 
+    //             id: paricipant.id,
+    //             name: paricipant.item,
+    //             share: '0.0' }])
+    //     })
 
 
-    const renderItem = (  item  ) => {
-        console.log("rendering......", typesValue)
-        //return renderItemCreator({ item });
+
+    // }, []);
+
+    // // exp end
+
+
+    const onPressHandler = (item) => {
+
+        const amount = txtInput
+
+        const balance = balance - amount
+
+        setBalance(balance);
+        
+        const id = item.userId
+
+        const result = participantExpenseList.filter( (item) => item.userId === id)
+
+        console.log(result);
+
+        if(result.length === 0){
+
+            setParticipantExpenseList(participantExpenseList => [...participantExpenseList, {
+                userId: item.userId,
+                name: item.name,
+                share: amount
+            }])
+
+        }else{
+            console.log('share exceeds');
+        }
+
+        console.log(`participantList....`)
+        
+
+    }
+
+    console.log(participantExpenseList)
+
+
+    const sharedExpenseHandler = (participantsExpenseList) => {
+        //pass the participantsExpenseList as a prop to createExpenseScreen
+        props.onSaveExpenseItem(participantExpenseList)
+        props.navigation.dispatch(popAction);
+    }
+
+    // const onChangeValueTextHandler = async ( amount, item ) => {
+
+    //     let arr = [ ...value ]
+    //     // console.log(`value......`);
+    //     // console.log(value);
+
+    //     arr = await Promise.all(arr.map((participant) => {
+
+    //         let amt = participant.share;
+
+    //         //console.log(`participant: ${participant}`);
+
+    //         if(participant.id === item.userId) {
+
+    //             amt = amount
+                
+    //         }
+
+    //         return {
+    //             'id': participant.id,
+    //             'name': participant.name,
+    //             'share': amt,
+    //         }
+    
+    //     }))
+
+    //     setValue(arr);
+
+    //     // console.log(`after value change-----`);
+    //     // console.log(value);
+
+    // }
+
+    //console.log(participantExpenseList);
+
+    const renderItem = ( { item } ) => {
+
         switch(typesValue){
 
-            case '0':
-
-                const equal = total / participants.length
-
-                return(
-                    <TouchableOpacity>
-                        <Text>{item.name}</Text>
-                        <TextInput 
-                            editable={false}
-                            value={equal}
-                        />
-                    </TouchableOpacity>
-                )
-
             case '1' :
 
-                const amount = 0.00
-
                 return(
-                    <TouchableOpacity>
-                        <Text>{item.name}</Text>
-                        <TextInput 
-                            value={amount}
-                        />
-                    </TouchableOpacity>
+                    <View style={styles.listItemContainer}>
+                        <View styles={styles.listDetailsContainer}>
+                            <Text>{item.name}</Text>
+                            <TextInput
+                                onChangeText ={(value) => {
+                                    setTxtinput(value);
+                                }}
+                                keyboardType="numeric"
+                            />
+                        </View>
+                            <TouchableOpacity 
+                                onPress={() => onPressHandler(item)}
+                            >
+                                <AntDesign name="check" color="black" size={20} />
+                            </TouchableOpacity>    
+                    </View>
                 )
 
             case '2' :
-
-                const percentage = 0.00    
+ 
                 return(
-                    <TouchableOpacity>
-                        <Text>{item.name}</Text>
-                        <TextInput 
-                            value={percentage}
-                        />
-                        <Text>%</Text>
-                    </TouchableOpacity>
-                )    
+                    <View style={styles.listItemContainer}>
+                        <View styles={styles.listDetailsContainer}>
+                            <Text>{item.name}</Text>
+                            <TextInput
+                                onChangeText={(value) => {
+                                    setTxtinput(value);
+                                }}
+                                keyboardType="numeric"
+                            />
+                        </View>
+                            <TouchableOpacity 
+                                onPress={() => onPressHandler(item)}
+                            >
+                                <AntDesign name="check" color="black" size={20} />
+                            </TouchableOpacity>    
+                    </View>
+                )   
+                
+            default :     
+
+                return(
+                    <View style={styles.listItemContainer}>
+                        <View styles={styles.listDetailsContainer}>
+                            <Text>{item.name}</Text>
+                            <TextInput
+                                onChangeText={(equal) => {
+                                    setTxtinput(equal);
+                                }}
+                                value={equal}
+                                keyboardType="numeric"
+                            />
+                        </View>
+                            <TouchableOpacity 
+                                onPress={() => onPressHandler(item)}
+                            >
+                                <AntDesign name="check" color="black" size={20} />
+                            </TouchableOpacity>    
+                    </View>
+                ) 
         }
 
     }
 
-    const renderItemCreator = ({ item }) => {
+    // picker change handler
+    // const changeSelectedHandler = (value) => {
+    //     setSelected(value);
+    // }
 
-
-
-        switch(selected){
-
-            case '0':
-
-                const equal = total / participants.length
-
-                return(
-                    <TouchableOpacity>
-                        <Text>{item.item}</Text>
-                        <TextInput 
-                            editable={false}
-                            value={equal}
-                        />
-                    </TouchableOpacity>
-                )
-
-            case '1' :
-
-                const amount = 0.00
-
-                return(
-                    <TouchableOpacity>
-                        <Text>{item.item}</Text>
-                        <TextInput 
-                            value={amount}
-                        />
-                    </TouchableOpacity>
-                )
-
-            case '2' :
-
-                const percentage = 0.00    
-                return(
-                    <TouchableOpacity>
-                        <Text>{item.item}</Text>
-                        <TextInput 
-                            value={percentage}
-                        />
-                        <Text>%</Text>
-                    </TouchableOpacity>
-                )    
-        }
-
-    }
-
-    const changeSelectedHandler = (value) => {
-        console.log(`selected value: ${value}`);
-        setSelected(value);
-    }
-
-    const splitType = [ 'Equally', 'Exact Amount', 'Percentage' ]
+    // const splitType = [ 'Equally', 'Exact Amount', 'Percentage' ]
 
     return(
-        <View>
-            {/* <Picker
-                mode="dropdown"
-                onValueChange={(value)=>{changeSelectedHandler(value)}}
-            >
-                {splitType.map((item, index) => {
-                    return (
-                        <Picker.Item label={item} value={index} key={index}/>
-                    ); 
-                })}
-            </Picker> */}
+        <View style={styles.homeContainer}>
+            <Text style={styles.label}>{`Remaining: ${balance}`}</Text>
             <DropDownPicker
-                    open={openTypes}
-                    value={typesValue}
-                    items={typesItems}
-                    setOpen={setOpenTypes}
-                    setValue={setTypesValue}
-                    setItems={setTypesItems}
-                    placeholder="Equally"
-                />
+                style={{ height: 40, marginVertical: 10 }}
+                open={openTypes}
+                value={typesValue}
+                items={typesItems}
+                setOpen={setOpenTypes}
+                setValue={setTypesValue}
+                setItems={setTypesItems}
+                placeholder="Equally"
+            />
             <View>
                 <SafeAreaView>
                     <FlatList
                         data={participants}
                         renderItem={renderItem}
-                        // keyExtractor={item => item.id}
+                        keyExtractor={item => item.userId}
                     />
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={()=>{sharedExpenseHandler}}
+                        >
+                            <Text style={styles.buttonText}>S A V E</Text>
+                        </TouchableOpacity>
+                   </View>
                 </SafeAreaView>
             </View>
         </View>
@@ -172,4 +247,4 @@ const CalculateExpenseScreen = ( props ) => {
 
 }
 
-export default CalculateExpenseScreen 
+export default CalculateExpenseScreen
