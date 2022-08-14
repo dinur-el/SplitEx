@@ -7,7 +7,7 @@ import { signOut } from 'firebase/auth'
 import { styles } from '../styles/styles';
 import ExpenseListItem from '../components/ExpenseListItem';
 import { ActivityIndicator } from 'react-native';
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, query, where } from "firebase/firestore";
 import { UserContext } from '../context/user-context';
 import * as Notifications from 'expo-notifications';
 
@@ -73,16 +73,21 @@ const HomeScreen = (props) => {
   useEffect(() => {
     let unsubscribed = false;
 
-    getDocs(collection(db, "Expenses"))
+    //https://firebase.google.com/docs/firestore/query-data/queries?hl=en&authuser=0
+    const expensesQuery = query(collection(db, "Expenses"));
+    getDocs(expensesQuery)
       .then((querySnapshot) => {
         if (unsubscribed) return; // unsubscribed? do nothing.
 
-        const expenses = querySnapshot.docs
+        let expenses = querySnapshot.docs
           .map((doc) => ({
             value: { ...doc.data() },
             key: doc.id,
           }));
 
+          expenses = expenses.filter((expense) => expense.value.participants.some(e => e.userId === userCtx.id))
+          
+          console.log(expenses)
         setExpenseList(expenses);
         setLoading(false);
       })

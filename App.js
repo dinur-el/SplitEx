@@ -7,7 +7,6 @@ import CreateExpenseScreen from './screens/CreateExpenseScreen';
 import ContactListScreen from './screens/ContactListScreen';
 import AddUserScreen from './screens/AddUserScreen';
 import UserContextProvider from './context/user-context';
-import ParticipantContextProvider from './context/participants-context';
 import CalculateExpenseScreen from './screens/CalculateExpenseScreen';
 
 const Stack = createNativeStackNavigator();
