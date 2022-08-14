@@ -1,23 +1,78 @@
+
+import { Image, Text, View, TouchableOpacity, FlatList, Alert, Platform } from 'react-native'
 import React from 'react'
 import { useState, useEffect, useContext } from 'react'
-import { Image, Text, View, TouchableOpacity, FlatList } from 'react-native'
-import { auth } from '../firebaseConfig'
+import { auth, db } from '../firebaseConfig'
 import { signOut } from 'firebase/auth'
 import { styles } from '../styles/styles';
 import ExpenseListItem from '../components/ExpenseListItem';
 import { ActivityIndicator } from 'react-native';
-import { db } from '../firebaseConfig';
-import { collection, getDocs } from "firebase/firestore";
-import { UserContext } from '../store/user-context'
+import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import { UserContext } from '../context/user-context';
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return {
+      shouldPlaySound: false,
+      shouldSetBadge: false,
+      shouldShowAlert: true
+    };
+  }
+});
 
 const HomeScreen = (props) => {
   const userCtx = useContext(UserContext);
   const [expenseList, setExpenseList] = useState([]);
   const [loading, setLoading] = useState(true); // Set loading to true on component mount
+  
+
+  const updatePushToken = async (pushToken) => {
+    try {
+      const userRef = doc(db, "Users", userCtx.id);
+
+      await updateDoc(userRef, {
+        pushToken: pushToken,
+      });
+
+      console.log("Push Token updated");
+    } catch (e) {
+      console.error("Error push Token: ", e);
+    }
+  }
+
+  useEffect(() => {
+    async function configurePushNotifications() {
+      const { status } = await Notifications.getPermissionsAsync();
+      let finalStatus = status;
+
+      if (finalStatus != 'granted') {
+        Alert.alert(
+          'Permission required',
+          'Push notifications need the appropriate permissions.'
+        );
+        return;
+      }
+
+      const pushTokenData = await Notifications.getExpoPushTokenAsync();
+      console.log("push Token", pushTokenData);
+      await updatePushToken(pushTokenData.data);
+
+      if (Platform.OS === 'android') {
+        Notifications.setNotificationChannelAsync('default', {
+          name: 'default',
+          importance: Notifications.AndroidImportance.DEFAULT
+        });
+      }
+    }
+
+    configurePushNotifications();
+
+  }, []);
 
   useEffect(() => {
     let unsubscribed = false;
-    console.log("id in context.....",userCtx.id)
+
     getDocs(collection(db, "Expenses"))
       .then((querySnapshot) => {
         if (unsubscribed) return; // unsubscribed? do nothing.
@@ -41,6 +96,31 @@ const HomeScreen = (props) => {
     return () => unsubscribed = true;
   }, []);
 
+  useEffect(() => {
+    const subscription1 = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log('NOTIFICATION RECIEVED');
+        console.log(notification);
+        const userName = notification.request.content.data.userName;
+        console.log(userName);
+      }
+    );
+
+    const subscription2 = Notifications.addNotificationResponseReceivedListener(
+      (response) => {
+        console.log('NOTIFICATION RESPONSE RECIEVED');
+        console.log(response);
+        const userName = response.notification.request.content.data.userName;
+        console.log(userName);
+      }
+    );
+
+    return () => {
+      subscription1.remove();
+      subscription2.remove();
+    }
+  }, []);
+
   if (loading) {
     return <ActivityIndicator />;
   }
@@ -60,7 +140,7 @@ const HomeScreen = (props) => {
     let index = expenseList.findIndex((key) => key !== expenseId);
     expenseList.splice(index, 1);
     setExpenseList(expenseList => [...expenseList]);
-}
+  }
 
   const handleContactList = () => {
     props.navigation.navigate('ContactList')
@@ -72,21 +152,57 @@ const HomeScreen = (props) => {
     })
   }
 
+  function scheduleNotificationHandler() {
+    Notifications.scheduleNotificationAsync({
+      ccontent: {
+        title: 'My first local notification',
+        body: "This is the body of the Notification",
+        data: { username: 'Max' },
+      },
+      trigger: {
+        seconds: 5,
+      }
+    });
+  }
+
+  const sendPushNotificationHandler = () => {
+    try {
+      fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          'host': 'exp.host',
+          'accept': 'application/json',
+          'accept-encoding': 'gzip, deflate',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          to: 'ExponentPushToken[FkY8O0CQvXqjYMnfV6bFi2]',
+          title: 'Test - sent from a device!',
+          body: 'This is a test!'
+        })
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  
+
   return (
     <View style={styles.homeContainer}>
-       <View style={styles.addContactsBtn}> 
-          <TouchableOpacity
-        activeOpacity={0.7}
-        style={styles.addButton}
-        onPress={handleContactList}
-      >
-        <Image
-          source={require('../assets/add-contact.jpeg')}
-          style={styles.floatingButtonStyle}
-        />
-      </TouchableOpacity>
-      </View> 
-      
+      <View style={styles.addContactsBtn}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.addButton}
+          onPress={handleContactList}
+        >
+          <Image
+            source={require('../assets/add-contact.jpeg')}
+            style={styles.floatingButtonStyle}
+          />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.createExpenseBtn}>
         <TouchableOpacity
           style={styles.button}

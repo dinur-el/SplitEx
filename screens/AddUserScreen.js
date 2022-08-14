@@ -3,7 +3,7 @@ import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native";
 import { db } from '../firebaseConfig';
 import { styles } from '../styles/styles';
 import { collection, addDoc, doc } from "firebase/firestore";
-import { UserContext } from '../store/user-context'
+import { UserContext } from '../context/user-context'
 
 const AddUserScreen = (props) => {
   const userCtx = useContext(UserContext);
@@ -14,14 +14,13 @@ const AddUserScreen = (props) => {
     props.navigation.navigate('Home')
   }
 
-  //console.log(user)
   const saveToDatabase = async () => {
     try {
       const userDocRef = doc(db, "Users", userCtx.id);
       const contactColRef = collection(userDocRef, "ContactList")
       const contactDocRef = await addDoc(contactColRef, {
+        userId: user.id,
         name: user?.name,
-        phone: user?.phoneNumbers[0]?.number
       });
 
       console.log("Document written with ID: ", contactDocRef.id);
@@ -29,8 +28,6 @@ const AddUserScreen = (props) => {
       console.error("Error adding document: ", e);
     }
   }
-
-  console.log(user)
 
   return (
     <View style={styles.container}>
@@ -41,19 +38,15 @@ const AddUserScreen = (props) => {
       </View>
       <View style={styles.contactDat}>
         <Text style={styles.name}>
-          {user?.firstName}
+          {user?.name}
         </Text>
-        <Text style={styles.name}>
-          {user?.lastName}
+        <Text style={styles.email}>
+          {user?.email}
         </Text>
         <Text style={styles.phoneNumber}>
-          {user?.phoneNumbers[0]?.number}
+          {user?.phone}
         </Text>
       </View>
-      {/* <Button
-        title="Add user"
-        onPress={addUserHandler}
-      /> */}
       <View style={styles.buttonContainer} >
         <TouchableOpacity
           onPress={addUserHandler}

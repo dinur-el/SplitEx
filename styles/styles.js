@@ -147,6 +147,9 @@ export const styles = StyleSheet.create({
         fontWeight: '900',
         fontSize: 25, 
       },
+      email: {
+        fontSize: 25, 
+      },
       phoneNumber: {
         color: '#888',
         fontSize: 35, 

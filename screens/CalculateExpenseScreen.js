@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { View, SafeAreaView, Picker, Text, TextInput, TouchableOpacity, FlatList, Button } from 'react-native'
+import React, { useState } from 'react'
+import { View, SafeAreaView, Text, TextInput, TouchableOpacity, FlatList } from 'react-native'
+import DropDownPicker from 'react-native-dropdown-picker';
 import { AntDesign } from '@expo/vector-icons'
 import { StackActions } from '@react-navigation/native';
 import { styles } from '../styles/styles';
-import { async } from '@firebase/util';
 
 const CalculateExpenseScreen = ( props ) => {
 
@@ -14,7 +14,7 @@ const CalculateExpenseScreen = ( props ) => {
     const popAction = StackActions.pop(1);
 
     // type of payment 
-    const [selected, setSelected] = useState(0)
+    //const [selected, setSelected] = useState(0)
 
     // to store a single participant contribution value
     const [ value, setValue ] = useState([]);
@@ -27,23 +27,36 @@ const CalculateExpenseScreen = ( props ) => {
 
     const equal = total / participants.length
 
-    
-    // exp
 
-    useEffect(() => {
+    // for dropdown picker
+
+    const [openTypes, setOpenTypes] = useState(false);
+
+    const [typesValue, setTypesValue] = useState('0');
+
+    const [typesItems, setTypesItems] = useState([
+    { label: 'Equally', value: '0' },
+    { label: 'Exact Amount', value: '1' },
+    { label: 'Percentage', value: '2' }
+    ]);
+
+
+    // // exp
+
+    // useEffect(() => {
         
-        participants.forEach((paricipant) => {
-            setValue( value => [...value, { 
-                id: paricipant.id,
-                name: paricipant.item,
-                share: '0.0' }])
-        })
+    //     participants.forEach((paricipant) => {
+    //         setValue( value => [...value, { 
+    //             id: paricipant.id,
+    //             name: paricipant.item,
+    //             share: '0.0' }])
+    //     })
 
 
 
-    }, []);
+    // }, []);
 
-    // exp end
+    // // exp end
 
 
     const onPressHandler = (item) => {
@@ -54,18 +67,18 @@ const CalculateExpenseScreen = ( props ) => {
 
         setBalance(balance);
         
-        const id = item.id
+        const id = item.userId
 
-        const result = participantExpenseList.filter( (item) => item.id === id)
+        const result = participantExpenseList.filter( (item) => item.userId === id)
 
         console.log(result);
 
         if(result.length === 0){
 
             setParticipantExpenseList(participantExpenseList => [...participantExpenseList, {
-                id: item.id,
-                name: item.item,
-                amount: amount
+                userId: item.userId,
+                name: item.name,
+                share: amount
             }])
 
         }else{
@@ -86,58 +99,54 @@ const CalculateExpenseScreen = ( props ) => {
         props.navigation.dispatch(popAction);
     }
 
-    const onChangeValueTextHandler = async ( amount, item ) => {
+    // const onChangeValueTextHandler = async ( amount, item ) => {
 
-        let arr = [ ...value ]
-        // console.log(`value......`);
-        // console.log(value);
+    //     let arr = [ ...value ]
+    //     // console.log(`value......`);
+    //     // console.log(value);
 
-        arr = await Promise.all(arr.map((participant) => {
+    //     arr = await Promise.all(arr.map((participant) => {
 
-            let amt = participant.share;
+    //         let amt = participant.share;
 
-            //console.log(`participant: ${participant}`);
+    //         //console.log(`participant: ${participant}`);
 
-            if(participant.id === item.id) {
+    //         if(participant.id === item.userId) {
 
-                amt = amount
+    //             amt = amount
                 
-            }
+    //         }
 
-            return {
-                'id': participant.id,
-                'name': participant.name,
-                'share': amt,
-            }
+    //         return {
+    //             'id': participant.id,
+    //             'name': participant.name,
+    //             'share': amt,
+    //         }
     
-        }))
+    //     }))
 
-        setValue(arr);
+    //     setValue(arr);
 
-        // console.log(`after value change-----`);
-        // console.log(value);
+    //     // console.log(`after value change-----`);
+    //     // console.log(value);
 
-    }
+    // }
 
     //console.log(participantExpenseList);
 
     const renderItem = ( { item } ) => {
 
-        switch(selected){
+        switch(typesValue){
 
             case '1' :
 
                 return(
                     <View style={styles.listItemContainer}>
                         <View styles={styles.listDetailsContainer}>
-                            <Text>{item.item}</Text>
+                            <Text>{item.name}</Text>
                             <TextInput
                                 onChangeText ={(value) => {
-                                    // console.log(`value: ${value}`)
-                                    // console.log(`item: ${item}`)
-                                    // onChangeValueTextHandler( value, item )
                                     setTxtinput(value);
-            
                                 }}
                                 keyboardType="numeric"
                             />
@@ -155,12 +164,9 @@ const CalculateExpenseScreen = ( props ) => {
                 return(
                     <View style={styles.listItemContainer}>
                         <View styles={styles.listDetailsContainer}>
-                            <Text>{item.item}</Text>
+                            <Text>{item.name}</Text>
                             <TextInput
                                 onChangeText={(value) => {
-                                    // console.log(`value: ${value}`)
-                                    // console.log(`item: ${item}`)
-                                    // onChangeValueTextHandler( value, item )
                                     setTxtinput(value);
                                 }}
                                 keyboardType="numeric"
@@ -179,12 +185,9 @@ const CalculateExpenseScreen = ( props ) => {
                 return(
                     <View style={styles.listItemContainer}>
                         <View styles={styles.listDetailsContainer}>
-                            <Text>{item.item}</Text>
+                            <Text>{item.name}</Text>
                             <TextInput
                                 onChangeText={(equal) => {
-                                    // console.log(`value: ${equal}`)
-                                    // console.log(`item: ${item}`)
-                                    // onChangeValueTextHandler( equal, item )
                                     setTxtinput(equal);
                                 }}
                                 value={equal}
@@ -203,36 +206,31 @@ const CalculateExpenseScreen = ( props ) => {
     }
 
     // picker change handler
-    const changeSelectedHandler = (value) => {
-        setSelected(value);
-    }
+    // const changeSelectedHandler = (value) => {
+    //     setSelected(value);
+    // }
 
-    const splitType = [ 'Equally', 'Exact Amount', 'Percentage' ]
+    // const splitType = [ 'Equally', 'Exact Amount', 'Percentage' ]
 
     return(
         <View style={styles.homeContainer}>
             <Text style={styles.label}>{`Remaining: ${balance}`}</Text>
-            <Picker style={{ height: 40, marginVertical: 10 }}
-                mode="dropdown"
-                onValueChange={(value)=>{changeSelectedHandler(value)}}
-            >
-                {splitType.map((item, index) => {
-                    return (
-                        <Picker.Item 
-                            label={item} 
-                            value={index} 
-                            key={index}
-                            style={{ fontSize: 20, paddingBottom: 10 }}
-                        />
-                    ); 
-                })}
-            </Picker>
+            <DropDownPicker
+                style={{ height: 40, marginVertical: 10 }}
+                open={openTypes}
+                value={typesValue}
+                items={typesItems}
+                setOpen={setOpenTypes}
+                setValue={setTypesValue}
+                setItems={setTypesItems}
+                placeholder="Equally"
+            />
             <View>
                 <SafeAreaView>
                     <FlatList
                         data={participants}
                         renderItem={renderItem}
-                        keyExtractor={item => item.id}
+                        keyExtractor={item => item.userId}
                     />
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity

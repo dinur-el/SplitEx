@@ -5,7 +5,7 @@ import { auth } from '../firebaseConfig'
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth'
 import { useNavigation } from '@react-navigation/core'
 import { styles } from '../styles/styles';
-import { UserContext } from '../store/user-context'
+import { UserContext } from '../context/user-context'
 
 
 const LoginScreen = (props) => {
