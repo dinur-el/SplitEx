@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from 'react-native';
-
+import { View, Text, TouchableOpacity, BUtton } from 'react-native';
+import { Button } from "react-native-web";
 import { styles } from '../styles/styles';
 
 const ExpenseListItem = props => {
@@ -10,6 +10,10 @@ const ExpenseListItem = props => {
                 <Text>DESCRIPTION: {props.item.description}</Text>
                 <Text>AMOUNT: {props.item.amount}</Text>
             </TouchableOpacity>
+            <Button 
+                title="SETTLE IT"
+                onPress={props.onDelete.bind(this, props.id)}
+            />
         </View >
     )
 }

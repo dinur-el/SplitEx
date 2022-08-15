@@ -105,6 +105,7 @@ const CreateExpense = props => {
                 description: enteredDescription,
                 amount: enteredAmount,
                 date: serverTimestamp(),
+                type: typesValue,
                 participants: setupParticipants()
             });
 
@@ -183,6 +184,8 @@ const CreateExpense = props => {
         return selectedParticipants.map((participant) => ({
             userId: participant.userId,
             name: participant.item,
+            status: 'open',
+            paid: false,
             share: 1/(selectedParticipants.length + 1)
         }));
     }
@@ -248,7 +251,7 @@ const CreateExpense = props => {
                     </TouchableOpacity>
 
                 }
-
+                
                 {/* split options  */}
                 <TouchableOpacity
                     onPress={calculateAmountHandler}
