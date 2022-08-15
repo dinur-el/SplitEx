@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { View, TextInput, Text, Alert, TouchableOpacity } from 'react-native';
 import { db } from '../firebaseConfig';
-import { doc, collection, collectionGroup, addDoc, updateDoc, deleteDoc, getDocs, serverTimestamp } from "firebase/firestore";
+import { doc, collection, collectionGroup, addDoc, updateDoc, deleteDoc, getDocs, serverTimestamp, getDoc } from "firebase/firestore";
 import { styles } from '../styles/styles';
 import SelectBox from 'react-native-multi-selectbox'
 import { xorBy } from 'lodash'
@@ -27,6 +27,8 @@ const CreateExpense = props => {
     ]);
 
     const [buttonTextValue, setButtonTextValue] = useState('S A V E');
+
+    const [currentUser, setCurrentUser] = useState();
 
     let { item, buttonText } = props.route.params
 
@@ -58,6 +60,30 @@ const CreateExpense = props => {
                 console.error("Failed to retrieve data", err);
             });
 
+
+        return () => unsubscribed = true;
+    }, []);
+
+
+    // get logged user
+    useEffect(() => {
+        let unsubscribed = false;
+
+        //db.collection("app").document("users").collection(uid).document("notifications")
+
+        
+        const check = async () => {
+            const userRef = doc(db, "Users", userCtx.id)
+            const docSnap = await getDoc(userRef);
+            console.log(docSnap.data());
+
+            setCurrentUser({
+                userId: userCtx.id,
+                name: docSnap.data().name
+            })
+        } 
+
+        check();
 
         return () => unsubscribed = true;
     }, []);
@@ -204,13 +230,25 @@ const CreateExpense = props => {
     }
 
     const setupParticipants = () => {
-        return selectedParticipants.map((participant) => ({
+
+        const loggedUser = {
+            userId: currentUser.userId,
+            name: currentUser.name,
+            paid: true,
+            share: 1/(selectedParticipants.length + 1)
+        }
+
+        const arr = selectedParticipants.map((participant) => ({
             userId: participant.userId,
             name: participant.item,
             status: 'open',
             paid: false,
             share: 1/(selectedParticipants.length + 1)
         }));
+
+        arr.push(loggedUser)
+
+        return arr;
     }
 
     const changeParticipantsHandler = (participants) => {

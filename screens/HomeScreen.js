@@ -1,5 +1,5 @@
 
-import { Image, Text, View, TouchableOpacity, FlatList, Alert, Platform } from 'react-native'
+import { Image, Text, View, TouchableOpacity, FlatList, Alert, Platform, SectionList } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker';
 import React from 'react'
 import { useState, useEffect, useContext } from 'react'
@@ -8,7 +8,7 @@ import { signOut } from 'firebase/auth'
 import { styles } from '../styles/styles';
 import ExpenseListItem from '../components/ExpenseListItem';
 import { ActivityIndicator } from 'react-native';
-import { collection, getDocs, doc, updateDoc, query, where } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, query, where, orderBy } from "firebase/firestore";
 import { UserContext } from '../context/user-context';
 import * as Notifications from 'expo-notifications';
 
@@ -36,11 +36,12 @@ const HomeScreen = (props) => {
     { label: 'Owes to you', value: 'owestoto' }
 ]);
 
+const [isShared, setShared] = useState(false);
+const [isIndividual, setIndividual] = useState(false);
 // have a variable to check the status and return a boolean
 //var isShared = (typesValue === 'shared') ? true : false;
 // can use a switch status
-var isShared = true;
-  
+
 
   const updatePushToken = async (pushToken) => {
     try {
@@ -89,7 +90,7 @@ var isShared = true;
     let unsubscribed = false;
 
     //https://firebase.google.com/docs/firestore/query-data/queries?hl=en&authuser=0
-    const expensesQuery = query(collection(db, "Expenses"), where("type", "==", "individual"));
+    const expensesQuery = query(collection(db, "Expenses"), orderBy("type"));
     getDocs(expensesQuery)
       .then((querySnapshot) => {
         if (unsubscribed) return; // unsubscribed? do nothing.
@@ -102,9 +103,8 @@ var isShared = true;
 
           expenses = expenses.filter((expense) => expense.value.participants.some(e => e.userId === userCtx.id))
           
-          console.log(expenses)
-        setExpenseList(expenses);
-        setLoading(false);
+          setExpenseList(expenses);
+          setLoading(false);
       })
       .catch((err) => {
         if (unsubscribed) return; // unsubscribed? do nothing.
@@ -115,39 +115,6 @@ var isShared = true;
 
     return () => unsubscribed = true;
   }, []);
-
-  // get shared expenses
-  useEffect(() => {
-    let unsubscribed = false;
-
-    //https://firebase.google.com/docs/firestore/query-data/queries?hl=en&authuser=0
-    const sharedExpensesQuery = query(collection(db, "Expenses"), where("type", "==", "shared"));
-    getDocs(sharedExpensesQuery)
-      .then((querySnapshot) => {
-        if (unsubscribed) return; // unsubscribed? do nothing.
-
-        let sharedExp = querySnapshot.docs
-          .map((doc) => ({
-            value: { ...doc.data() },
-            key: doc.id,
-          }));
-
-          sharedExp = sharedExp.filter((shared) => shared.value.participants.some(e => e.userId === userCtx.id))
-          
-          console.log(sharedExp)
-          setSharedExpenseList(sharedExp);
-        setLoading(false);
-      })
-      .catch((err) => {
-        if (unsubscribed) return; // unsubscribed? do nothing.
-
-        // TODO: Handle errors
-        console.error("Failed to retrieve data", err);
-      });
-
-    return () => unsubscribed = true;
-  }, []);
-
 
 
   useEffect(() => {
@@ -240,8 +207,6 @@ var isShared = true;
     }
   }
 
-  
-
   return (
     <View style={styles.homeContainer}>
       <View style={styles.addContactsBtn}>
@@ -256,7 +221,6 @@ var isShared = true;
           />
         </TouchableOpacity>
       </View>
-
       <View style={styles.createExpenseBtn}>
         <TouchableOpacity
           style={styles.button}
@@ -268,67 +232,30 @@ var isShared = true;
               onDeleteItem: deleteExpenseHandler,
               buttonText: "S A V E"
             })}
-
         >
           <Text style={styles.buttonText}>CREATE NEW EXPENSE</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={expenseList}
-        renderItem={
-          (itemData) => (
-            <ExpenseListItem
-              id={itemData.item.key}
-              onSelect={() => props.navigation.navigate('CreateExpense',
-                {
-                  onSaveItem: saveExpenseHandler,
-                  onUpdateItem: updateExpenseHandler,
-                  onDeleteItem: deleteExpenseHandler,
-                  buttonText: "U P D A T E",
-                  item: itemData.item
-                })}
-              item={itemData.item.value}
-            />
-          )
-        }
-      />
-      {isShared &&
-        <>
-          <View>
-          <DropDownPicker
-            open={openTypes}
-            value={typesValue}
-            items={typesItems}
-            setOpen={setOpenTypes}
-            setValue={setTypesValue}
-            setItems={setTypesItems}
-            placeholder="youowe"
-          />
-          </View>
-          <FlatList
-          data={sharedExpenseList}
+        <FlatList
+          data={expenseList}
           renderItem={
-              (itemData) => (
-                <ExpenseListItem
-                  id={itemData.item.key}
-                  onSelect={() => props.navigation.navigate('CreateExpense',
-                    {
-                      onSaveItem: saveExpenseHandler,
-                      onUpdateItem: updateExpenseHandler,
-                      onDeleteItem: deleteExpenseHandler,
-                      buttonText: "U P D A T E",
-                      item: itemData.item
-                    })}
-                  onDelete={() => deleteExpenseHandler(itemData.item.key)}
-                  item={itemData.item.value}
-                />
-              )
-            }
-          />
-        </>
-
-        
-      }
+            (itemData) => (
+              <ExpenseListItem
+                id={itemData.item.key}
+                onSelect={() => props.navigation.navigate('CreateExpense',
+                  {
+                    onSaveItem: saveExpenseHandler,
+                    onUpdateItem: updateExpenseHandler,
+                    onDeleteItem: deleteExpenseHandler,
+                    buttonText: "U P D A T E",
+                    item: itemData.item
+                  })}
+                onDelete={() => deleteExpenseHandler(itemData.item.key)}  
+                item={itemData.item.value}
+              />
+            )
+          }
+        />
     </View>
   )
 }
