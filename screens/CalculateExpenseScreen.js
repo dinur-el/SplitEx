@@ -93,10 +93,12 @@ const CalculateExpenseScreen = ( props ) => {
     console.log(participantExpenseList)
 
 
-    const sharedExpenseHandler = (participantsExpenseList) => {
+    const sharedExpenseHandler = () => {
+
+        console.log("afadfdfdgsdg")
         //pass the participantsExpenseList as a prop to createExpenseScreen
-        props.onSaveExpenseItem(participantExpenseList)
-        props.navigation.dispatch(popAction);
+        props.onChangeParticipants(participantExpenseList)
+        props.navigation.goBack()
     }
 
     // const onChangeValueTextHandler = async ( amount, item ) => {
@@ -235,7 +237,7 @@ const CalculateExpenseScreen = ( props ) => {
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={()=>{sharedExpenseHandler}}
+                            onPress={sharedExpenseHandler}
                         >
                             <Text style={styles.buttonText}>S A V E</Text>
                         </TouchableOpacity>

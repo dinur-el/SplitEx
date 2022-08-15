@@ -35,6 +35,7 @@ const CreateExpense = props => {
     var isShared = (typesValue === 'shared') ? true : false;
 
     useEffect(() => {
+        console.log(selectedParticipants)
         let unsubscribed = false;
 
         getDocs(collectionGroup(db, "ContactList"))
@@ -65,6 +66,7 @@ const CreateExpense = props => {
     const saveItemHandler = async () => {
         if (buttonText == 'S A V E') {
             let key = await saveToDatabase();
+            sendPushNotificationHandler();
             props.onSaveItem(key, enteredDescription, enteredAmount);
 
         } else {
@@ -165,6 +167,27 @@ const CreateExpense = props => {
         );
     }
 
+    const sendPushNotificationHandler = () => {
+        try {
+          fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+              'host': 'exp.host',
+              'accept': 'application/json',
+              'accept-encoding': 'gzip, deflate',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              to: 'ExponentPushToken[FkY8O0CQvXqjYMnfV6bFi2]',
+              title: 'Test - sent from a device!',
+              body: 'This is a test!'
+            })
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
+
     // send partcipants and total to CalculateExpenseScreen
     const calculateAmountHandler = () => {
 
@@ -250,11 +273,11 @@ const CreateExpense = props => {
                 }
 
                 {/* split options  */}
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     onPress={calculateAmountHandler}
                     style={[styles.button]}>
                     <Text style={styles.buttonText}>Split options</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
             </View>
         </View>
