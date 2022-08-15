@@ -27,7 +27,7 @@ const HomeScreen = (props) => {
   const [expenseList, setExpenseList] = useState([]);
   const [sharedExpenseList, setSharedExpenseList] = useState([]);
   console.log(expenseList)
-  //const [loading, setLoading] = useState(true); // Set loading to true on component mount
+  const [loading, setLoading] = useState(true); // Set loading to true on component mount
 
   const [openTypes, setOpenTypes] = useState(false);
   const [typesValue, setTypesValue] = useState('youowe');
@@ -104,7 +104,7 @@ const [isIndividual, setIndividual] = useState(false);
           expenses = expenses.filter((expense) => expense.value.participants.some(e => e.userId === userCtx.id))
           
           setExpenseList(expenses);
-         // setLoading(false);
+          setLoading(false);
       })
       .catch((err) => {
         if (unsubscribed) return; // unsubscribed? do nothing.
@@ -142,9 +142,9 @@ const [isIndividual, setIndividual] = useState(false);
     }
   }, []);
 
-  // if (loading) {
-  //   return <ActivityIndicator />;
-  // }
+  if (loading) {
+    return <ActivityIndicator />;
+  }
 
   const updateExpenseHandler = (expenseId, description, amount) => {
     let index = expenseList.findIndex((key) => key !== expenseId);
