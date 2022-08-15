@@ -51,6 +51,14 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 10,
     },
+    buttonSettle: {
+      backgroundColor: '#E67867',
+      width: '100%',
+      padding: 15,
+      borderRadius: 10,
+      alignItems: 'center',
+      marginBottom: 10,
+  },
     buttonOutline: {
         marginTop: 5,
         borderColor: '#0782F9',
